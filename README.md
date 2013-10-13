@@ -23,6 +23,25 @@ Notice that the above path to the locales does not have a trailing slash.
 The plugin will do a trailing slash check when defining the path, so you
 may include it or not.
 
+### Loading additional namespaces
+
+With i18next you can load multiple namespaces and refer to them when 
+calling translate with a key (for example i18next.t("namespace:key").
+
+This plugin gives you the option to load additional namespaces 
+immediately when loading a locale by doing:
+
+```javascript
+require(["some/module", "i18n!path/to/locales:namespace1,namespace2"],
+    function(module, i18n) {
+        // The additional namespaces "namespace1" and "namespace2" are
+        // now loaded and ready for use
+    }
+);
+```
+NOTE: when using the supportedLngs option mentioned below, be sure to
+add this additional namespaces to the list of supported namespaces.
+
 ## Configuration
 
 ### Plugin setup
