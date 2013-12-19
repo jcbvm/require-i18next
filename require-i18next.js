@@ -1,6 +1,6 @@
 /* RequireJS i18next Plugin
  * 
- * Version 0.2.0 (10-13-2013)
+ * Version 0.3.0 (10-13-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
@@ -51,7 +51,7 @@ define(["i18next"], function(i18next) {
     }
     
     plugin = {
-        version: "0.2.0",
+        version: "0.3.0",
         
         /**
          * Parses a resource name into its component parts. 
