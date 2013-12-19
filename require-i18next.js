@@ -1,6 +1,6 @@
 /* RequireJS i18next Plugin
  * 
- * Version 0.2.1 (10-13-2013)
+ * Version 0.2.1 (12-19-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
