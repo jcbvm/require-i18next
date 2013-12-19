@@ -7,9 +7,8 @@
 define(["i18next"], function(i18next) {
     "use strict";
     
-    var plugin,
-        o = i18next.options,
-        f = i18next.functions;
+    var plugin, resGetPath, 
+    	f = i18next.functions;
     
     /**
      * Checks if the given language and namespace are supported.
@@ -55,8 +54,8 @@ define(["i18next"], function(i18next) {
         
         /**
          * Parses a resource name into its component parts. 
-         * For example: resource:namespace1,namespace2 where module is the module name 
-         * and the part after the : the additional namespace(s) to load.
+         * For example: resource:namespace1,namespace2 where resource is the path to
+         * the locales and the part after the : the additional namespace(s) to load.
          * 
          * @param {String} name The resource name
          * @returns {Object} Object containing module name and namespaces
@@ -79,21 +78,31 @@ define(["i18next"], function(i18next) {
          * @returns {Object} The i18next object
          */
         load: function(name, req, onload, config) {
-            // Skip the process and just return the i18next object
-            // if we are in a build environment
+        	
+        	// Skip the process if we are in a build environment
             if (config.isBuild) {
-                onload(i18next);
+                onload();
                 return;
             }
             
-            // Pull in options from requirejs config
-            var options = f.extend(o, config.i18next);
+            // Pull in i18next's options
+            var options = i18next.options;
+            
+    		// Do some setup when we run this plugin for the first time
+            if (!resGetPath) {
+            	
+            	// Overwrite i18next options with config from requirejs
+            	f.extend(options, config.i18next);
+            	
+            	// Save original resGetPath
+            	resGetPath = options.resGetPath;
+            }
             
             // Parse the resource name
             name = plugin.parseName(name);
             
             // Set the resource path
-            options.resGetPath = req.toUrl(name.module + options.resGetPath);
+            options.resGetPath = req.toUrl(name.module + resGetPath);
             
             // If supportedLngs is defined, we want to do a custom load
             if (options.supportedLngs) {
