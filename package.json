@@ -1,9 +1,9 @@
 {
     "name": "require-i18next",
     "description": "RequireJS i18next Plugin",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "author": "Jacob van Mourik",
-    "main": "require-i18next",
+    "main": "require-i18next/i18next",
     "repository": {
         "type": "git",
         "url": "https://github.com/jcbvm/require-i18next.git"
