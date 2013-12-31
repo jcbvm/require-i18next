@@ -1,57 +1,22 @@
-/* RequireJS i18next Plugin
+/**
+ * RequireJS i18next Plugin
  * 
- * Version 0.2.1 (12-19-2013)
+ * Version 0.3.0 (12-31-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
 define(["i18next"], function(i18next) {
     "use strict";
-    
-    var plugin, resGetPath, 
-    	f = i18next.functions;
-    
-    /**
-     * Checks if the given language and namespace are supported.
-     * 
-     * @param {String} lng The language to check
-     * @param {String} ns The namespace to check
-     * @param {Object} supportedLngs Object containing supported languages/namespaces 
-     * @returns {Boolean} Whether the given language and namespace are supported
-     */
-    function checkSupport(lng, ns, supportedLngs) {
-        var supported = false;
-        f.each(supportedLngs, function(language, namespaces) {
-            if (language === lng) {
-                f.each(namespaces, function(idx, namespace) {
-                    return !(supported = namespace === ns);
-                });
-            }
-            return !supported;
-        });
-        return supported;
-    }
-    
-    /**
-     * Initializes i18next with given options and namespaces.
-     * 
-     * @param {Object} options I18next options
-     * @param {Array} namespaces Additional namespaces to load
-     * @param {Function} callback Callback function to call when done initializing
-     */
-    function initI18next(options, namespaces, callback) { 
-        i18next.init(options, function() {
-            if (namespaces) {
-                // Load additional namespaces
-                i18next.loadNamespaces(namespaces, callback);
-            } else {
-                callback && callback();
-            }
-        });
-    }
-    
+
+    var plugin,
+        origResGetPath,
+        f = i18next.functions,
+        o = i18next.options;
+
     plugin = {
-        version: "0.2.1",
-        
+        version: "0.3.0",
+        pluginBuilder: "./i18next-builder",
+
         /**
          * Parses a resource name into its component parts. 
          * For example: resource:namespace1,namespace2 where resource is the path to
@@ -61,77 +26,64 @@ define(["i18next"], function(i18next) {
          * @returns {Object} Object containing module name and namespaces
          */
         parseName: function(name) {
-            name = name.split(":");
+            var splitted = name.split(":");
             return {
-                module: name[0] + (name[0].substr(name[0].length-1, 1) !== "/" ? "/" : ""),
-                namespaces: name[1] ? name[1].split(",") : null
+                module: splitted[0],
+                namespaces: splitted[1] ? splitted[1].split(",") : []
             };
         },
-        
-        /**
-         * Loads an i18next resource.
-         * 
-         * @param {String} name The name of the resource to load
-         * @param {Function} req A local "require" function to use to load other modules
-         * @param {Function} onload A function to call with the value for name
-         * @param {Object} config A configuration object
-         * @returns {Object} The i18next object
-         */
+
         load: function(name, req, onload, config) {
-        	
-        	// Skip the process if we are in a build environment
-            if (config.isBuild) {
-                onload();
-                return;
+            var parsedName = plugin.parseName(name),
+            options = config.i18next || {},
+            namespaces = parsedName.namespaces,
+            dir = parsedName.module,
+            url, supportedLngs;
+
+            // Store original resource path when running for the first time
+            if (!origResGetPath) {
+                origResGetPath = options.resGetPath || o.resGetPath;
             }
-            
-            // Pull in i18next's options
-            var options = i18next.options;
-            
-    		// Do some setup when we run this plugin for the first time
-            if (!resGetPath) {
-            	
-            	// Overwrite i18next options with config from requirejs
-            	f.extend(options, config.i18next);
-            	
-            	// Save original resGetPath
-            	resGetPath = options.resGetPath;
+
+            // Define locale URL
+            url = req.toUrl(dir + (dir.substr(dir.length-1) !== "/" ? "/" : "") + origResGetPath);
+
+            // Define supported languages
+            supportedLngs = options.supportedLngs;
+            if (supportedLngs && supportedLngs[dir]) {
+                supportedLngs = supportedLngs[dir];
             }
-            
-            // Parse the resource name
-            name = plugin.parseName(name);
-            
-            // Set the resource path
-            options.resGetPath = req.toUrl(name.module + resGetPath);
-            
-            // If supportedLngs is defined, we want to do a custom load
-            if (options.supportedLngs) {
-                
-                // We'll define a custom load function here which will be called 
-                // by i18next on each request
+
+            // Set resource path
+            options.resGetPath = url;
+
+            // Set custom load function if supported languages is defined
+            if (supportedLngs) {
                 options.customLoad = function(lng, ns, opts, done) {
-                    var url, supportedLngs = options.supportedLngs;
-                    
-                    // Check for a scoped value
-                    if (supportedLngs[name.module]) {
-                        supportedLngs = supportedLngs[name.module];
-                    }
-                    
-                    // Return if the language and/or namespace are not supported
-                    if (!checkSupport(lng, ns, supportedLngs)) {
+                    var supported;
+
+                    // Check for language and namespace support
+                    f.each(supportedLngs, function(language, namespaces) {
+                        if (language === lng) {
+                            f.each(namespaces, function(idx, namespace) {
+                                return !(supported = namespace === ns);
+                            });
+                        }
+                        return !supported;
+                    });
+
+                    // Return if language and/or namespace are not supported
+                    if (!supported) {
                         f.log("no support found for: " + ns + ":" + lng);
                         done(null, {});
                         return;
                     }
-                    
-                    // Apply the requested language and namespace to the resource path
-                    url = f.applyReplacement(options.resGetPath, {lng: lng, ns: ns});
-                    
+
                     // Make the request
                     f.ajax({
-                        url: url,
+                        url: f.applyReplacement(url, {lng: lng, ns: ns}),
                         dataType: "json",
-                        async: options.getAsync,
+                        async: opts.async,
                         success: function(data, status, xhr) {
                             f.log("loaded: " + url);
                             done(null, data);
@@ -143,13 +95,18 @@ define(["i18next"], function(i18next) {
                     });
                 };
             }
-            
+
+            // Unset supported languages
+            delete options.supportedLngs;
+
             // Initialize i18next and return the i18next object
-            initI18next(options, name.namespaces, function() {
-                onload(i18next);
+            i18next.init(options, function() {
+                i18next.loadNamespaces(namespaces, function() {
+                    onload(i18next);
+                });
             });
         }
     };
-    
+
     return plugin;
 });
