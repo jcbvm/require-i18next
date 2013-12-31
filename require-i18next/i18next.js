@@ -35,7 +35,7 @@ define(["i18next"], function(i18next) {
 
         load: function(name, req, onload, config) {
             var parsedName = plugin.parseName(name),
-            options = config.i18next || {},
+            options = f.extend({}, config.i18next),
             namespaces = parsedName.namespaces,
             dir = parsedName.module,
             url, supportedLngs;
