@@ -81,7 +81,7 @@ define(["i18next"], function(i18next) {
 
             // Setup build options when running for the first time
             if (!options) {
-                options = config.i18next;
+                options = f.extend({}, config.i18next);
                 options.resStore = options.resStore || {};
                 supportedLngs = options.supportedLngs;
                 delete options.supportedLngs;
