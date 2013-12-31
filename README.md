@@ -5,6 +5,10 @@ A [RequireJS](http://requirejs.org) plugin for [i18next](http://i18next.com).
 If you are using Handlebars, you might also want to look at my
 [i18next Handlebars helper](https://github.com/jcbvm/handlebars-i18next).
 
+## Download
+
+[Latest release](https://github.com/jcbvm/require-i18next/releases/latest)
+
 ## Usage
 
 The require-i18next plugin makes is able to load locales as dependency in
