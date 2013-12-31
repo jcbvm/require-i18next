@@ -92,7 +92,7 @@ define(["i18next"], function(i18next) {
                 namespaces = parsedName.namespaces,
                 dir = parsedName.module,
                 resGetPath = options.resGetPath || o.resGetPath,
-                defaultNamespace = options.ns || o.ns;
+                defaultNamespace = options.ns || o.ns,
                 interpolation = {
                     interpolationPrefix: options.interpolationPrefix || o.interpolationPrefix,
                     interpolationSuffix: options.interpolationSuffix || o.interpolationSuffix
