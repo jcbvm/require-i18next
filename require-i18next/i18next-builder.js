@@ -76,7 +76,6 @@ define(["i18next"], function(i18next) {
 
             // Currently, inlining resources is only supported for single file builds 
             if (config.modules.length > 1) {
-            	console.log(config.modules);
             	throw new Error("The i18next plugin doesn't support inlining resources for " +
             			"multiple module builds. To proceed, remove the inlineI18next " +
             			"property in the build options.");
