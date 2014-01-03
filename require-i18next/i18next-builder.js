@@ -1,18 +1,15 @@
 /**
  * RequireJS i18next Plugin (builder)
  * 
- * Version 0.3.0 (12-31-2013)
+ * Version 0.3.0 (01-03-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
 define(["i18next"], function(i18next) {
     "use strict";
 
-    var builder,
-        initWritten,
+    var initWritten,
         options,
-        resources = {},
-        supportedLngs,
         f = i18next.functions,
         o = i18next.options;
 
@@ -52,25 +49,23 @@ define(["i18next"], function(i18next) {
         }
     }
 
-    builder = {
-        version: "0.3.0",
+    /**
+	 * Parses a resource name into its component parts. 
+	 * For example: resource:namespace1,namespace2 where resource is the path to
+	 * the locales and the part after the : the additional namespace(s) to load.
+	 * 
+	 * @param {String} name The resource name
+	 * @returns {Object} Object containing module name and namespaces
+	 */
+	function parseName(name) {
+		var splitted = name.split(":");
+		return {
+			module: splitted[0],
+			namespaces: splitted[1] ? splitted[1].split(",") : []
+		};
+	}
 
-        /**
-         * Parses a resource name into its component parts. 
-         * For example: resource:namespace1,namespace2 where resource is the path to
-         * the locales and the part after the : the additional namespace(s) to load.
-         * 
-         * @param {String} name The resource name
-         * @returns {Object} Object containing module name and namespaces
-         */
-        parseName: function(name) {
-            var splitted = name.split(":");
-            return {
-                module: splitted[0],
-                namespaces: splitted[1] ? splitted[1].split(",") : []
-            };
-        },
-
+    return {
         load: function(name, req, onload, config) {
             // Skip the process if i18next resources will not be inlined 
             // or supported languages is not defined
@@ -79,18 +74,24 @@ define(["i18next"], function(i18next) {
                 return;
             }
 
+            // Currently, inlining resources is only supported for single file builds 
+            if (config.modules.length > 1) {
+            	console.log(config.modules);
+            	throw new Error("The i18next plugin doesn't support inlining resources for " +
+            			"multiple module builds. To proceed, remove the inlineI18next " +
+            			"property in the build options.");
+            }
+
             // Setup build options when running for the first time
             if (!options) {
-                options = f.extend({}, config.i18next);
-                options.resStore = options.resStore || {};
-                supportedLngs = options.supportedLngs;
-                delete options.supportedLngs;
+            	options = config.i18next;
+            	options.resStore = options.resStore || {};
             }
 
             var languages, content, url,
-                parsedName = builder.parseName(name),
+                parsedName = parseName(name),
                 namespaces = parsedName.namespaces,
-                dir = parsedName.module,
+                module = parsedName.module,
                 resGetPath = options.resGetPath || o.resGetPath,
                 defaultNamespace = options.ns || o.ns,
                 interpolation = {
@@ -98,23 +99,27 @@ define(["i18next"], function(i18next) {
                     interpolationSuffix: options.interpolationSuffix || o.interpolationSuffix
                 };
 
-            // Define resource URL
-            url = req.toUrl(dir + (dir.substr(dir.length-1) !== "/" ? "/" : "") + resGetPath);
+            // Add default namespace to namespaces list
+            namespaces.push(defaultNamespace);
 
-            // Define languages to load
-            languages = supportedLngs;
-            if (languages[dir]) {
-                languages = languages[dir];
-            } 
+            // Check for scoped supported languages value
+            languages = options.supportedLngs;
+            if (languages[module]) {
+            	languages = languages[module];
+            }
+
+            // Fix module ending slash
+            module += module.substr(module.length-1) !== "/" ? "/" : "";
 
             // Load all needed resources
-            resources[name] = {};
             f.each(languages, function(lng, nss) {
-                resources[name][lng] = {};
+            	options.resStore[lng] = options.resStore[lng] || {};
                 f.each(nss, function(idx, ns) {
-                    if (ns === defaultNamespace || namespaces.indexOf(ns) !== -1) {
-                        content = loadFile(f.applyReplacement(url, {lng: lng, ns: ns}, null, interpolation));
-                        resources[name][lng][ns] = JSON.parse(content);
+                    if (namespaces.indexOf(ns) !== -1) {
+	                	url = req.toUrl(module + f.applyReplacement(resGetPath, {lng: lng, ns: ns}, null, interpolation));
+	                	content = JSON.parse(loadFile(url));
+	                	options.resStore[lng][ns] = options.resStore[lng][ns] || {};
+	                	f.extend(options.resStore[lng][ns], content);
                     }
                 });
             });
@@ -123,32 +128,19 @@ define(["i18next"], function(i18next) {
         },
 
         write: function(pluginName, moduleName, write) {
-            if (!resources.hasOwnProperty(moduleName)) {
-                return;
-            }
-            // Write out module which initializes i18next (only ones)
             if (!initWritten) {
-                initWritten = true;
-                write.asModule("i18next-init",
-                    "define(['i18next'], function(i18next) {\n" +
-                        "\ti18next.init(" + JSON.stringify(options) + ");\n" +
-                        "\treturn i18next;\n" +
-                    "});");
+            	initWritten = true;
+            	delete options.supportedLngs;
+            	write.asModule("i18next-init",
+                        "define(['i18next'], function(i18next) {\n" +
+                            "\ti18next.init(" + JSON.stringify(options) + ");\n" +
+                            "\treturn i18next;\n" +
+                        "});");
             }
-            // Write out module which adds the loaded resources to i18next
             write.asModule(pluginName + "!" + moduleName,
-                "define(['i18next-init'], function(i18next) {\n" +
-                    "\tvar f = i18next.functions;\n" +
-                    "\tvar resources = " + JSON.stringify(resources[moduleName]) + ";\n" +
-                    "\tf.each(resources, function(lng, nss) {\n" +
-                        "\t\tf.each(nss, function(idx, ns) {\n" +
-                            "\t\t\ti18next.addResourceBundle(lng, ns, resources[lng][ns]);\n" +
-                        "\t\t});\n" +
-                    "\t});\n" +
-                    "\treturn i18next;\n" +
-                "});");
+	                "define(['i18next-init'], function(i18next) {\n" +
+	                    "\treturn i18next;\n" +
+	                "});");
         }
     };
-
-    return builder;
 });
