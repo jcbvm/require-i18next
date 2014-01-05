@@ -58,10 +58,10 @@ Below follows a basic example on how to set up the plugin in requirejs.
 ```javascript
 requirejs.config({
     map: {
-        i18n : "require-i18next/i18next.js" // or some other path to the plugin file
+        i18n : "require-i18next/i18next" // or some other path to the plugin file
     },
     paths: {
-        i18next : "i18next.js" // or some other path to the i18next.js file
+        i18next : "i18next" // or some other path to the i18next.js file
     }
 });
 ```
