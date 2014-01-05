@@ -151,9 +151,9 @@ used as supported languages.
 
 The plugin supports inlining locales when optimizing your code. Within the build process, the plugin will load all resources and add them to the final file. After the build process, i18next doen't have to load any locales anymore, but can simply read them from the same file (therefor the plugin code is not needed anymore in the final file).
 
-NOTES:
- - Currently inlining locales is only supported for single file builds
- - The "supportedLngs" option is needed to inline the locales (see the advanced options)
+<b>NOTES</b>
+- Currently inlining locales is only supported for single file builds
+- The "supportedLngs" option is needed to inline the locales (see the advanced options)
 
 ### Build configuration example
 
