@@ -1,19 +1,63 @@
 /**
  * RequireJS i18next Plugin
  * 
- * Version 0.3.0 (01-03-2013)
+ * Version 0.3.0 (01-05-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
-define([ "i18next" ], function(i18next) {
+define(["i18next"], function(i18next) {
     "use strict";
 
-    var plugin, 
-        defaultNamespace, 
-        supportedLngs, 
-        resStore = {}, 
-        f = i18next.functions, 
+    var plugin,
+        defaultNamespace,
+        supportedLngs,
+        resStore = {},
+        f = i18next.functions,
         o = i18next.options;
+
+    /**
+     * Checks to see if there exists a resource with the given 
+     * module, language and namespace in the store. 
+     * 
+     * @param {String} module The module name
+     * @param {String} lng The language
+     * @param {String} ns The namespace
+     * @returns {Boolean} If the resource exists in the store
+     */
+    function resourceExists(module, lng, ns) {
+        return resStore[module] && resStore[module][lng] && resStore[module][lng][ns];
+    }
+
+    /**
+     * Adds a resource to the store (overrides existing one).
+     * 
+     * @param {String} module The module name
+     * @param {String} lng The language
+     * @param {String} ns The namespace
+     * @param {Object} data The resource data
+     */
+    function addResource(module, lng, ns, data) {
+        resStore[module] = resStore[module] || {};
+        resStore[module][lng] = resStore[module][lng] || {};
+        resStore[module][lng][ns] = data;
+    }
+
+    /**
+     * Gets all resources by the given language and namespace.
+     * 
+     * @param {String} lng The language
+     * @param {String} ns The namespace
+     * @returns {Object} The resource data
+     */
+    function getResources(lng, ns) {
+        var data = {};
+        f.each(resStore, function(module) {
+            if (resStore[module][lng] && resStore[module][lng][ns]) {
+                f.extend(data, resStore[module][lng][ns]);
+            }
+        });
+        return data;
+    }
 
     plugin = {
         version: "0.3.0",
@@ -30,14 +74,14 @@ define([ "i18next" ], function(i18next) {
         parseName: function(name) {
             var splitted = name.split(":");
             return {
-                module : splitted[0],
-                namespaces : splitted[1] ? splitted[1].split(",") : []
+                module: splitted[0],
+                namespaces: splitted[1] ? splitted[1].split(",") : []
             };
         },
 
         load: function(name, req, onload, config) {
             var parsedName = plugin.parseName(name), 
-                options = config.i18next, 
+                options = f.extend({}, config.i18next), 
                 namespaces = parsedName.namespaces, 
                 module = parsedName.module, 
                 supportedLngs = options.supportedLngs;
@@ -52,31 +96,28 @@ define([ "i18next" ], function(i18next) {
                 supportedLngs = supportedLngs[module];
             }
 
-            // Fix module ending slash
-            module += module.substr(module.length - 1) !== "/" ? "/" : "";
-
-            // Backup existing namespaces, so we can restore them when new ones are loaded
+            // Set the namespaces
             namespaces.push(defaultNamespace);
-            f.each(resStore, function(lng, nss) {
-                f.each(nss, function(ns) {
-                    if (resStore[lng][ns]) {
-                        resStore[lng]['_' + ns] = resStore[lng][ns];
-                        delete resStore[lng][ns];
-                    }
-                });
-            });
-
-            // Set the existing resources
-            options.resStore = resStore;
+            options.ns = { 
+                namespaces: namespaces, 
+                defaultNs: defaultNamespace
+            };
 
             // Set a custom load function
             options.customLoad = function(lng, ns, opts, done) {
                 var supported, url;
 
+                // Check for already loaded resource
+                if (resourceExists(module, lng, ns)) {
+                    done(null, getResources(lng, ns));
+                    return;
+                }
+
+                // Check for language/namespace support
                 if (supportedLngs) {
                     f.each(supportedLngs, function(language, namespaces) {
                         if (language === lng) {
-                            f.each(namespaces,function(idx, namespace) {
+                            f.each(namespaces, function(idx, namespace) {
                                 return !(supported = namespace === ns);
                             });
                         }
@@ -86,27 +127,24 @@ define([ "i18next" ], function(i18next) {
                         f.log("no support found for: " + ns);
                         done(null, {});
                         return;
-                    }
+                    } 
                 }
 
                 // Define resource url
-                url = req.toUrl(module + f.applyReplacement(opts.resGetPath, {lng : lng, ns : ns}));
+                url = req.toUrl(module + (module.substr(module.length - 1) !== "/" ? "/" : "") + 
+                        f.applyReplacement(opts.resGetPath, {lng : lng, ns : ns}));
 
+                // Make the request
                 f.ajax({
-                    url : url,
-                    dataType : "json",
-                    async : opts.async,
-                    success : function(data, status, xhr) {
+                    url: url,
+                    dataType: "json",
+                    async: opts.async,
+                    success: function(data, status, xhr) {
+                        addResource(module, lng, ns, data);
                         f.log("loaded: " + url);
-                        resStore[lng] = resStore[lng] || {};
-                        resStore[lng][ns] = data;
-                        if (resStore[lng]['_' + ns]) {
-                            f.extend(resStore[lng][ns], resStore[lng]['_' + ns]);
-                            delete resStore[lng]['_' + ns];
-                        }
-                        done(null, resStore[lng][ns]);
+                        done(null, getResources(lng, ns));
                     },
-                    error : function(xhr, status, error) {
+                    error: function(xhr, status, error) {
                         f.log("failed loading: " + url);
                         done(error, {});
                     }
@@ -116,11 +154,9 @@ define([ "i18next" ], function(i18next) {
             // Delete supported languages, they are only needed by this plugin
             delete options.supportedLngs;
 
-            // Initialize i18next and load all needed resources
+            // Initialize i18next and return the i18next instance
             i18next.init(options, function() {
-                i18next.loadNamespaces(namespaces, function() {
-                    onload(i18next);
-                });
+                onload(i18next);
             });
         }
     };
