@@ -46,9 +46,6 @@ require(["some/module", "i18n!path/to/locales:namespace1,namespace2"],
     }
 );
 ```
-NOTES: 
- - When using the supportedLngs option mentioned below, make sure to
-   add this additional namespaces to the list of supported namespaces.
 
 ## Configuration
 
@@ -69,9 +66,9 @@ requirejs.config({
 
 Now you can use the i18n! prefix to load locales.
 
-NOTES: 
- - Make sure "i18next" is defined, as the plugin has a dependency on it.
- - Make sure the "i18next-builder" file is in the same directory as the plugin file.
+<b>NOTES</b><br>
+\- Make sure <i>i18next</i> is defined, as the plugin has a dependency on it.<br>
+\- Make sure the <i>i18next-builder</i> file is in the same directory as the plugin file.
 
 ### Basic options
 
@@ -143,19 +140,21 @@ requirejs.config({
 });
 ```
 
-With the above example when loading locales with i18n!path/to/locales1
+With the above example when loading locales with "i18n!path/to/locales1"
 only the languages defined in the "path/to/locales1" object will be
 used as supported languages.
 
 ## Optimization
 
-The plugin supports inlining locales when optimizing your code. Within the build process, the plugin will load all resources and add them to the final file. After the build process, i18next doen't have to load any locales anymore, but can simply read them from the same file (therefor the plugin code is not needed anymore in the final file).
+The plugin supports inlining locales when optimizing your code. 
+Within the build process, the plugin will load all resources and add them to the final file. 
+After the build process, i18next doesn't have to dynamicly load any locales anymore, but can simply read them from the same file.
 
-<b>NOTES</b>
-- Currently inlining locales is only supported for single file builds
-- The "supportedLngs" option is needed to inline the locales (see the advanced options)
+<b>NOTES</b><br>
+\- Currently inlining locales is only supported for single file builds<br>
+\- The <i>supportedLngs</i> option is needed to inline the locales (see [Advanced Options](#advanced-options))
 
-### Build configuration example
+### Build configuration
 
 ```javascript
 ({
