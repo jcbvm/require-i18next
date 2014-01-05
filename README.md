@@ -57,9 +57,11 @@ Below follows a basic example on how to set up the plugin in requirejs.
 
 ```javascript
 requirejs.config({
+    map: {
+        i18n : "require-i18next/i18next.js" // or some other path to the plugin file
+    },
     paths: {
-        i18next : "path/to/i18next.js",
-        i18n    : "path/to/require-i18next.js"
+        i18next : "i18next.js" // or some other path to the i18next.js file
     }
 });
 ```
@@ -78,13 +80,12 @@ configuration as following:
 ```javascript
 requirejs.config({
     i18next: {
-        debug         : true,
-        ns            : "messages",
-        fallbackLng   : "en",
-        detectLngQS   : "locale",
-        lowerCaseLng  : true,
-        useCookie     : false,
-        resGetPath    : "__ns__.__lng__.json"
+        ns           : "messages",
+        fallbackLng  : "en",
+        detectLngQS  : "locale",
+        lowerCaseLng : true,
+        useCookie    : false,
+        resGetPath   : "__ns__.__lng__.json"
     }
 });
 ```
