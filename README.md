@@ -58,18 +58,19 @@ Below follows a basic example on how to set up the plugin in requirejs.
 ```javascript
 requirejs.config({
     map: {
-        i18n : "require-i18next/i18next" // or some other path to the plugin file
+        i18n : "path/to/require-i18next/plugin" // for example require-i18next/i18next
     },
     paths: {
-        i18next : "i18next" // or some other path to the i18next.js file
+        i18next : "path/to/i18next"
     }
 });
 ```
 
 Now you can use the i18n! prefix to load locales.
 
-NOTE: please make sure "i18next" is defined, as the plugin has a 
-dependency on it.
+NOTES: 
+- please make sure "i18next" is defined, as the plugin has a dependency on it.
+- please make sure the i18next-builder file is in the same directory as the plugin file.
 
 ### Basic options
 
