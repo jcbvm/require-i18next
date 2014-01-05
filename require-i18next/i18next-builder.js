@@ -1,7 +1,6 @@
 /**
- * RequireJS i18next Plugin (builder)
+ * This file is part of the RequireJS i18next Plugin
  * 
- * Version 0.3.0 (01-03-2013)
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
@@ -31,7 +30,7 @@ define(["i18next"], function(i18next) {
             var stringBuffer, line,
                 file = new java.io.File(path), 
                 lineSeparator = java.lang.System.getProperty("line.separator"), 
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), 'utf-8'));
+                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), "utf-8"));
             try {
                 stringBuffer = new java.lang.StringBuffer();
                 line = input.readLine();
@@ -50,20 +49,20 @@ define(["i18next"], function(i18next) {
     }
 
     /**
-	 * Parses a resource name into its component parts. 
-	 * For example: resource:namespace1,namespace2 where resource is the path to
-	 * the locales and the part after the : the additional namespace(s) to load.
-	 * 
-	 * @param {String} name The resource name
-	 * @returns {Object} Object containing module name and namespaces
-	 */
-	function parseName(name) {
-		var splitted = name.split(":");
-		return {
-			module: splitted[0],
-			namespaces: splitted[1] ? splitted[1].split(",") : []
-		};
-	}
+     * Parses a resource name into its component parts. 
+     * For example: resource:namespace1,namespace2 where resource is the path to
+     * the locales and the part after the : the additional namespace(s) to load.
+     * 
+     * @param {String} name The resource name
+     * @returns {Object} Object containing module name and namespaces
+     */
+    function parseName(name) {
+        var splitted = name.split(":");
+        return {
+            module: splitted[0],
+            namespaces: splitted[1] ? splitted[1].split(",") : []
+        };
+    }
 
     return {
         load: function(name, req, onload, config) {
@@ -76,15 +75,15 @@ define(["i18next"], function(i18next) {
 
             // Currently, inlining resources is only supported for single file builds 
             if (config.modules.length > 1) {
-            	throw new Error("The i18next plugin doesn't support inlining resources for " +
-            			"multiple module builds. To proceed, remove the inlineI18next " +
-            			"property in the build options.");
+                throw new Error("The i18next plugin doesn't support inlining resources for " +
+                        "multiple module builds. To proceed, remove the inlineI18next " +
+                        "property in the build options.");
             }
 
             // Setup build options when running for the first time
             if (!options) {
-            	options = config.i18next;
-            	options.resStore = options.resStore || {};
+                options = config.i18next;
+                options.resStore = options.resStore || {};
             }
 
             var languages, content, url,
@@ -104,7 +103,7 @@ define(["i18next"], function(i18next) {
             // Check for scoped supported languages value
             languages = options.supportedLngs;
             if (languages[module]) {
-            	languages = languages[module];
+                languages = languages[module];
             }
 
             // Fix module ending slash
@@ -112,13 +111,13 @@ define(["i18next"], function(i18next) {
 
             // Load all needed resources
             f.each(languages, function(lng, nss) {
-            	options.resStore[lng] = options.resStore[lng] || {};
+                options.resStore[lng] = options.resStore[lng] || {};
                 f.each(nss, function(idx, ns) {
                     if (namespaces.indexOf(ns) !== -1) {
-	                	url = req.toUrl(module + f.applyReplacement(resGetPath, {lng: lng, ns: ns}, null, interpolation));
-	                	content = JSON.parse(loadFile(url));
-	                	options.resStore[lng][ns] = options.resStore[lng][ns] || {};
-	                	f.extend(options.resStore[lng][ns], content);
+                        url = req.toUrl(module + f.applyReplacement(resGetPath, {lng: lng, ns: ns}, null, interpolation));
+                        content = JSON.parse(loadFile(url));
+                        options.resStore[lng][ns] = options.resStore[lng][ns] || {};
+                        f.extend(options.resStore[lng][ns], content);
                     }
                 });
             });
@@ -128,18 +127,18 @@ define(["i18next"], function(i18next) {
 
         write: function(pluginName, moduleName, write) {
             if (!initWritten) {
-            	initWritten = true;
-            	delete options.supportedLngs;
-            	write.asModule("i18next-init",
+                initWritten = true;
+                delete options.supportedLngs;
+                write.asModule("i18next-init",
                         "define(['i18next'], function(i18next) {\n" +
                             "\ti18next.init(" + JSON.stringify(options) + ");\n" +
                             "\treturn i18next;\n" +
                         "});");
             }
             write.asModule(pluginName + "!" + moduleName,
-	                "define(['i18next-init'], function(i18next) {\n" +
-	                    "\treturn i18next;\n" +
-	                "});");
+                    "define(['i18next-init'], function(i18next) {\n" +
+                        "\treturn i18next;\n" +
+                    "});");
         }
     };
 });
