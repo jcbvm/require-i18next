@@ -169,3 +169,5 @@ After the build process, i18next doesn't have to dynamicly load any locales anym
 ## License
 
 This project is released under the MIT license.
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jcbvm/require-i18next/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
