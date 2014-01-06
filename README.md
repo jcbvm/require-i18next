@@ -66,7 +66,7 @@ requirejs.config({
 
 Now you can use the i18n! prefix to load locales.
 
-<b>NOTES</b><br>
+Notes:<br>
 \- Make sure <i>i18next</i> is defined, as the plugin has a dependency on it.<br>
 \- Make sure the <i>i18next-builder</i> file is in the same directory as the plugin file.
 
@@ -150,7 +150,7 @@ The plugin supports inlining locales when optimizing your code.
 Within the build process, the plugin will load all resources and add them to the final file. 
 After the build process, i18next doesn't have to dynamicly load any locales anymore, but can simply read them from the same file.
 
-<b>NOTES</b><br>
+Notes:<br>
 \- Currently inlining locales is only supported for single file builds<br>
 \- The <i>supportedLngs</i> option is needed to inline the locales (see [Advanced Options](#advanced-options))
 
@@ -170,4 +170,4 @@ After the build process, i18next doesn't have to dynamicly load any locales anym
 
 This project is released under the MIT license.
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jcbvm/require-i18next/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+<br>[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jcbvm/require-i18next/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
