@@ -33,7 +33,7 @@ may include it or not.
 ### Loading additional namespaces
 
 With i18next you can load multiple namespaces and refer to them when 
-calling translate with a key (for example i18next.t("namespace:key").
+calling translate with a key (for example <code>i18next.t("namespace:key")</code>).
 
 This plugin gives you the option to load additional namespaces 
 immediately when loading a locale by doing:
@@ -46,6 +46,52 @@ require(["some/module", "i18n!path/to/locales:namespace1,namespace2"],
     }
 );
 ```
+
+### Special notes
+
+When loading multiple locale files from different locations within the same requirejs module, the locales will be merged. So for example if you load the following locale files:
+
+```javascript
+// Locale file 1
+{
+    "key1": "value1",
+    "key2": "value2"
+}
+
+// Locale file 2
+{
+    "key1": "value1",
+    "key2": "value2"
+}
+
+// Later in the code
+i18n.t("key1");
+```
+
+The second translations will overwrite the first translations (because the keys are the same). To prevent these overriding, it is always a good idea to put the keys in a separate (unique) scope, so for example:
+
+```javascript
+// Locale file 1
+{
+    "translations1": {
+        "key1": "value1",
+        "key2": "value2"
+    }
+}
+
+// Locale file 2
+{
+    "translations2": {
+        "key1": "value1",
+        "key2": "value2"
+    }
+}
+
+// Later in the code
+i18n.t("translations1.key1");
+```
+
+This way, loading both locales will not override any existing translations within the same namespace.
 
 ## Configuration
 
