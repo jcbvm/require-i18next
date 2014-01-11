@@ -126,6 +126,9 @@ define(["i18next"], function(i18next) {
         },
 
         write: function(pluginName, moduleName, write) {
+            if (!options) {
+                return;
+            }
             if (!initWritten) {
                 initWritten = true;
                 delete options.supportedLngs;
