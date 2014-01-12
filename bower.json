@@ -1,12 +1,22 @@
 {
     "name": "require-i18next",
     "version": "0.3.0",
-    "main": "./require-i18next/i18next",
+    "license": "MIT",
     "authors": [
         "Jacob van Mourik"
     ],
-    "license": "MIT",
+    "main": [
+        "i18next", 
+        "i18next-builder"
+    ],
+    "repository": {
+        "type": "git", 
+        "url": "git://github.com/jcbvm/require-i18next.git"
+    },
     "dependencies": {
-        "i18next": "1.7.1"
-    }
+        "i18next": "~1.7.1"
+    },
+    "ignore": [
+        ".gitignore"
+    ]
 }
