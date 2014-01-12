@@ -4,13 +4,43 @@
  * Copyright 2013 Jacob van Mourik
  * Released under the MIT license
  */
-define(["i18next"], function(i18next) {
+(function() {
     "use strict";
 
-    var initWritten,
-        options,
-        f = i18next.functions,
-        o = i18next.options;
+    var data,
+        dataWritten,
+        options = {
+            ns: "translation",
+            resGetPath: "locales/__lng__/__ns__.json",
+            interpolationPrefix: "__",
+            interpolationSuffix: "__"
+        };
+
+    // Based on underscore.js
+    function each(obj, iterator, context) {
+        if (!obj) return;
+        if (obj.length === +obj.length) {
+            for (var i = 0, length = obj.length; i < length; i++) {
+                iterator.call(context, obj[i], i);
+            }
+        } else {
+            for (var prop in obj) {
+                iterator.call(context, obj[prop], prop);
+            }
+        }
+    }
+
+    // Based on underscore.js
+    function extend(obj) {
+        each(Array.prototype.slice.call(arguments, 1), function(source) {
+            if (source) {
+                for (var prop in source) {
+                    obj[prop] = source[prop];
+                }
+            }
+        });
+        return obj;
+    }
 
     /**
      * Synchronously loads the contents of a file using either nodejs or rhino.
@@ -64,7 +94,7 @@ define(["i18next"], function(i18next) {
         };
     }
 
-    return {
+    define({
         load: function(name, req, onload, config) {
             // Skip the process if i18next resources will not be inlined 
             // or supported languages is not defined
@@ -80,25 +110,19 @@ define(["i18next"], function(i18next) {
                         "property in the build options.");
             }
 
-            // Setup build options when running for the first time
-            if (!options) {
-                options = config.i18next;
-                options.resStore = options.resStore || {};
-            }
-
-            var languages, content, url,
+            var languages, url, content,
                 parsedName = parseName(name),
                 namespaces = parsedName.namespaces,
-                module = parsedName.module,
-                resGetPath = options.resGetPath || o.resGetPath,
-                defaultNamespace = options.ns || o.ns,
-                interpolation = {
-                    interpolationPrefix: options.interpolationPrefix || o.interpolationPrefix,
-                    interpolationSuffix: options.interpolationSuffix || o.interpolationSuffix
-                };
+                module = parsedName.module;
+
+            // Setup options when running for the first time
+            if (!data) {
+                data = config.i18next;
+                extend(options, data);
+            }
 
             // Add default namespace to namespaces list
-            namespaces.push(defaultNamespace);
+            namespaces.push(options.ns);
 
             // Check for scoped supported languages value
             languages = options.supportedLngs;
@@ -110,14 +134,17 @@ define(["i18next"], function(i18next) {
             module += module.substr(module.length-1) !== "/" ? "/" : "";
 
             // Load all needed resources
-            f.each(languages, function(lng, nss) {
+            options.resStore = options.resStore || {};
+            each(languages, function(nss, lng) {
                 options.resStore[lng] = options.resStore[lng] || {};
-                f.each(nss, function(idx, ns) {
+                each(nss, function(ns) {
                     if (namespaces.indexOf(ns) !== -1) {
-                        url = req.toUrl(module + f.applyReplacement(resGetPath, {lng: lng, ns: ns}, null, interpolation));
+                        url = req.toUrl(module + options.resGetPath
+                                .replace(options.interpolationPrefix + "ns" + options.interpolationSuffix, ns)
+                                .replace(options.interpolationPrefix + "lng" + options.interpolationSuffix, lng));
                         content = JSON.parse(loadFile(url));
                         options.resStore[lng][ns] = options.resStore[lng][ns] || {};
-                        f.extend(options.resStore[lng][ns], content);
+                        extend(options.resStore[lng][ns], content);
                     }
                 });
             });
@@ -126,15 +153,14 @@ define(["i18next"], function(i18next) {
         },
 
         write: function(pluginName, moduleName, write) {
-            if (!options) {
-                return;
-            }
-            if (!initWritten) {
-                initWritten = true;
-                delete options.supportedLngs;
+            if (!data) return;
+            if (!dataWritten) {
+                dataWritten = true;
+                data.resStore = options.resStore;
+                delete data.supportedLngs;
                 write.asModule("i18next-init",
                         "define(['i18next'], function(i18next) {\n" +
-                            "\ti18next.init(" + JSON.stringify(options) + ");\n" +
+                            "\ti18next.init(" + JSON.stringify(data) + ");\n" +
                             "\treturn i18next;\n" +
                         "});");
             }
@@ -143,5 +169,5 @@ define(["i18next"], function(i18next) {
                         "\treturn i18next;\n" +
                     "});");
         }
-    };
-});
+    });
+})();
