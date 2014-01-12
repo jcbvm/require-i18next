@@ -1,7 +1,7 @@
 {
     "name": "require-i18next",
     "version": "0.3.0",
-    "main": "i18next",
+    "main": "./require-i18next/i18next",
     "authors": [
         "Jacob van Mourik"
     ],
