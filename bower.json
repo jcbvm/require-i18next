@@ -1,0 +1,12 @@
+{
+    "name": "require-i18next",
+    "version": "0.3.0",
+    "main": "i18next",
+    "authors": [
+        "Jacob van Mourik"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "i18next": "1.7.1"
+    }
+}
