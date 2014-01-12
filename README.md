@@ -102,19 +102,16 @@ Below follows a basic example on how to set up the plugin in requirejs.
 ```javascript
 requirejs.config({
     map: {
-        i18n : "path/to/require-i18next/plugin" // for example require-i18next/i18next
-    },
-    paths: {
-        i18next : "path/to/i18next"
+        "*": {
+            i18n: "require-i18next/i18next" // Path to require-i18next plugin
+        }
     }
 });
 ```
 
-Now you can use the i18n! prefix to load locales.
+Make sure the path <i>i18next</i> (pointing to the i18next lib) is available, as the plugin uses it.
 
-Notes:<br>
-\- Make sure <i>i18next</i> is defined, as the plugin has a dependency on it.<br>
-\- Make sure the <i>i18next-builder</i> file is in the same directory as the plugin file.
+Now you can use the i18n! prefix to load locales.
 
 ### Basic options
 
@@ -192,15 +189,13 @@ used as supported languages.
 
 ## Optimization
 
-The plugin supports inlining locales when optimizing your code. 
-Within the build process, the plugin will load all resources and add them to the final file. 
-After the build process, i18next doesn't have to dynamicly load any locales anymore, but can simply read them from the same file.
+When optimizing, make sure i18next is included in the module(s) where the plugin is used.
 
-Notes:<br>
-\- Currently inlining locales is only supported for single file builds<br>
-\- The <i>supportedLngs</i> option is needed to inline the locales (see [Advanced Options](#advanced-options))
+### Inlining locales
 
-### Build configuration
+The plugin supports inlining of locales. When inlining, the plugin will load all the locale files and add them to the final file. After the build process, i18next doesn't have to dynamicly load any locales anymore, but can simply read them from the same file.
+
+#### Build setup
 
 ```javascript
 ({
@@ -208,9 +203,14 @@ Notes:<br>
     inlineI18next: true, 
     
     // Plugin code is not needed anymore when inlining the locales
-    stubModules: ["require-i18next/i18next"], // the path you mapped to the i18n prefix in your config
+    stubModules: ["require-i18next/i18next"], // Path to require-i18next plugin
 })
 ```
+
+#### Notes
+
+- Currently inlining locales is only supported for single module builds<br>
+- The <i>supportedLngs</i> option is needed to inline the locales (see [Advanced options](#advanced-options))
 
 ## License
 
