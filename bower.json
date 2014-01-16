@@ -14,7 +14,11 @@
         "url": "git://github.com/jcbvm/require-i18next.git"
     },
     "dependencies": {
-        "i18next": "~1.7.1"
+        "i18next": "1.6.1 - 1.7",
+        "requirejs": "~2.1"
+    },
+    "devDependencies": {
+        "qunit": "~1.13"
     },
     "ignore": [
         ".gitignore"
