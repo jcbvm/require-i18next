@@ -189,7 +189,7 @@ used as supported languages.
 
 ## Optimization
 
-When optimizing, make sure i18next is included in the module(s) where the plugin is used.
+When optimizing, make sure the i18next lib is included in the module(s) where the plugin is used.
 
 ### Inlining locales
 
