@@ -21,6 +21,7 @@
         "qunit": "~1.13"
     },
     "ignore": [
-        ".gitignore"
+        ".gitignore",
+        ".gitattributes"
     ]
 }
