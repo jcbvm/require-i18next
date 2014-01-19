@@ -1,8 +1,8 @@
 /**
  * RequireJS i18next Plugin
  * 
- * Version 0.3.0 (01-05-2013)
- * Copyright 2013 Jacob van Mourik
+ * Version 0.4.0 (01-19-2014)
+ * Copyright 2013-2014 Jacob van Mourik
  * Released under the MIT license
  */
 define(["i18next"], function(i18next) {
@@ -15,7 +15,7 @@ define(["i18next"], function(i18next) {
         o = i18next.options;
 
     plugin = {
-        version: "0.3.0",
+        version: "0.4.0",
         pluginBuilder: "./i18next-builder",
 
         /**

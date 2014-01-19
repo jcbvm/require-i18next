@@ -1,7 +1,7 @@
 /**
  * This file is part of the RequireJS i18next Plugin
  * 
- * Copyright 2013 Jacob van Mourik
+ * Copyright 2013-2014 Jacob van Mourik
  * Released under the MIT license
  */
 (function() {
