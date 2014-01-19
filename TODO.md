@@ -1,2 +1,1 @@
 - Add support for dynamicLoad option (loading resources from server)
-- 
