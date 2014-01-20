@@ -1,6 +1,6 @@
-define(['qunit', 'i18n'], function(qunit, plugin) {
+define(['i18n'], function(plugin) {
 
-    qunit.test('name parsing', function(assert) {
+    QUnit.test('name parsing', function(assert) {
         assert.deepEqual(plugin.parseName('locales'), {
             module: 'locales',
             namespaces: []
@@ -15,7 +15,7 @@ define(['qunit', 'i18n'], function(qunit, plugin) {
         }, 'locales:ns1,ns2');
     });
     
-    qunit.test('resources', function(assert) {
+    QUnit.test('resources', function(assert) {
         plugin.addResource('locales1', 'en', 'translation', {test1:'test1'});
         plugin.addResource('locales2', 'en', 'translation', {test2:'test2'});
         plugin.addResource('locales1', 'nl', 'translation', {test3:'test3'});
@@ -31,6 +31,5 @@ define(['qunit', 'i18n'], function(qunit, plugin) {
         assert.deepEqual(plugin.getResources('de', 'translation'), {});
     });
     
-    qunit.load();
-    qunit.start();
+    QUnit.start();
 });

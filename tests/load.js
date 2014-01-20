@@ -1,4 +1,4 @@
-define(['qunit'], function(qunit) {
+define(['i18n'], function(plugin) {
 
     var options = {
         resGetPath: 'someResGetPath',
@@ -12,7 +12,7 @@ define(['qunit'], function(qunit) {
     
     require(['i18n!'], function(i18n) {
     
-        qunit.test('returns i18next instance', function(assert) {
+        QUnit.test('returns i18next instance', function(assert) {
             assert.ok(i18n.init, 'i18n.init');
             assert.ok(i18n.setLng, 'i18n.setLng');
             assert.ok(i18n.preload, 'i18n.preload');
@@ -32,24 +32,23 @@ define(['qunit'], function(qunit) {
             assert.ok(i18n.options, 'i18n.options');
         });
         
-        qunit.test('initializes i18next', function(assert) {
+        QUnit.test('initializes i18next', function(assert) {
             assert.notEqual(typeof i18n.options.lng, 'undefined');
         });
         
-        qunit.test('defines a custom load function', function(assert) {
+        QUnit.test('defines a custom load function', function(assert) {
             assert.equal(typeof i18n.options.customLoad, 'function');
         });
         
-        qunit.test('passes given options to i18next', function(assert) {
+        QUnit.test('passes given options to i18next', function(assert) {
             assert.strictEqual(i18n.options.resGetPath, options.resGetPath);
             assert.strictEqual(i18n.options.customOption, options.customOption);
         });
         
-        qunit.test('does not expose supported languages', function(assert) {
+        QUnit.test('does not expose supported languages', function(assert) {
             assert.equal(typeof i18n.options.supportedLngs, 'undefined');
         });
         
-        qunit.load();
-        qunit.start();
+        QUnit.start();
     });
 });

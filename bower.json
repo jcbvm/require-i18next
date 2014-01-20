@@ -5,23 +5,19 @@
     "authors": [
         "Jacob van Mourik"
     ],
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/jcbvm/require-i18next.git"
+    },
     "main": [
-        "i18next", 
+        "i18next",
         "i18next-builder"
     ],
-    "repository": {
-        "type": "git", 
-        "url": "git://github.com/jcbvm/require-i18next.git"
-    },
     "dependencies": {
-        "i18next": "1.6.1 - 1.7",
-        "requirejs": "~2.1"
+        "i18next": "~1.7.1",
+        "requirejs": "~2.1.10"
     },
     "devDependencies": {
-        "qunit": "~1.13"
-    },
-    "ignore": [
-        ".gitignore",
-        ".gitattributes"
-    ]
+        "qunit": "~1.13.0"
+    }
 }

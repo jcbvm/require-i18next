@@ -1,9 +1,9 @@
 /**
  * RequireJS i18next Plugin
  * 
- * Version 0.4.0 (01-19-2014)
- * Copyright 2013-2014 Jacob van Mourik
- * Released under the MIT license
+ * @version 0.4.0
+ * @copyright 2013-2014 Jacob van Mourik
+ * @license MIT
  */
 define(["i18next"], function(i18next) {
     "use strict";

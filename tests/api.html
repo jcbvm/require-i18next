@@ -4,10 +4,14 @@
     <meta charset="utf-8">
     <title>Plugin API</title>
     <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css">
+    <script src="../bower_components/qunit/qunit/qunit.js"></script>
+    <script data-main="config" src="../bower_components/requirejs/require.js"></script>
 </head>
 <body>
     <div id="qunit"></div>
-    <script data-main="config" src="../bower_components/requirejs/require.js"></script>
-    <script>require(['api']);</script>
+    <script>
+        QUnit.config.autostart = false;
+        require(['api']);
+    </script>
 </body>
 </html>
