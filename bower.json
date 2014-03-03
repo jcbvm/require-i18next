@@ -14,10 +14,10 @@
         "i18next-builder"
     ],
     "dependencies": {
-        "i18next": "~1.7.1",
-        "requirejs": "~2.1.10"
+        "i18next": "~1.7.2",
+        "requirejs": "~2.1.11"
     },
     "devDependencies": {
-        "qunit": "~1.13.0"
+        "qunit": "~1.14.0"
     }
 }

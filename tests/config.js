@@ -5,6 +5,6 @@ require.config({
         }
     },
     paths: {
-    	'i18next' : '../bower_components/i18next/release/i18next.amd-1.7.1'
+    	'i18next' : '../bower_components/i18next/i18next.amd'
     }
 });
