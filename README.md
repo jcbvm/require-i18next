@@ -130,7 +130,9 @@ The plugin will pass the options to i18next when loading locales.
 
 Currently i18next will try to load the locales it has detected from a user's browser or cookie, first by trying the specific locale, secondly by trying the unspecific locale and finally by trying the fallback locale. So for example when it has detected nl-NL, it will try to load nl-NL -> nl -> en (when en is set as fallback language). So it tries to load each locale, even if you don't have support for one of them. 
 
-The plugin adds an extra option to define the languages and namesapces you do support and will only try to load a locale if it is supported:
+The plugin adds an extra option "supportedLngs" to define the languages and namespaces you do support and will only try to load a locale if it is supported. 
+
+The supported languages can be defined by languages and namespaces pairs:
 
 ```javascript
 requirejs.config({
@@ -143,8 +145,7 @@ requirejs.config({
 });
 ```
 
-The extra option supportedLngs is an object containing languages with namespaces pairs. 
-It is also possible to give the supported languages a scope:
+It is also possible to define the supported languages with a scope:
 
 ```javascript
 requirejs.config({
