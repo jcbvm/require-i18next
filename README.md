@@ -213,4 +213,3 @@ The plugin supports inlining of locales. When inlining, the plugin will load all
 
 This project is released under the MIT license.
 
-<br>[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jcbvm/require-i18next/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
