@@ -1,14 +1,10 @@
 module.exports = function(grunt) {
-
-    var fs = require('fs'),
-        testFiles = fs.readdirSync('./tests'), 
-        testUrls = [];
+    var fs = require('fs');
     
-    for (var i = 0, l = testFiles.length; i < l; i++) {
-        if (/^(?!index).*\.html$/.test(testFiles[i])) {
-            testUrls.push('http://localhost:8000/tests/' + testFiles[i]);
-        }
-    }
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-replace');    
     
     grunt.initConfig({
         data: {
@@ -26,14 +22,20 @@ module.exports = function(grunt) {
         qunit: {
             main: {
                 options: {
-                    urls: testUrls
+                    urls: fs.readdirSync('./tests')
+                        .filter(function(file) {
+                            return /\.html$/.test(file);
+                        })
+                        .map(function(file) {
+                            return 'http://localhost:8000/tests/' + file;
+                        })
                 }
             }
         },
         replace: {
             main: {
                 files: [{
-                    src: ['i18next.js', 'i18next-builder.js'],
+                    src: ['require-i18next/i18next.js', 'require-i18next/i18next-builder.js'],
                     dest: './'
                 }],
                 options: {
@@ -65,7 +67,7 @@ module.exports = function(grunt) {
         uglify: {
             main: {
                 files: {
-                    'i18next.min.js': ['i18next.js']
+                    'require-i18next/i18next.min.js': ['require-i18next/i18next.js']
                 },
                 options: {
                     banner: '/* RequireJS i18next Plugin v<%= data.version %> | (c) <%= data.copyright %> | MIT Licensed */\n'
@@ -74,12 +76,6 @@ module.exports = function(grunt) {
         }
     });
     
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-replace');
-    
     grunt.registerTask('test', ['connect', 'qunit']);
-    grunt.registerTask('minify', ['uglify']);
-    grunt.registerTask('default', ['test', 'replace', 'minify']);
+    grunt.registerTask('default', ['test', 'replace', 'uglify']);
 };
