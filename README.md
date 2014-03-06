@@ -1,10 +1,14 @@
 # require-i18next
 
-A [RequireJS](http://requirejs.org) plugin for [i18next](http://i18next.com).
+A [RequireJS](http://requirejs.org) plugin for requiring and optimizing translations using [i18next](http://i18next.com).
 
 ## Download
 
 [Latest release](https://github.com/jcbvm/require-i18next/releases/latest)
+
+## Support
+
+The plugin supports both [RequireJS](http://requirejs.org) and [Almond](https://github.com/jrburke/almond).
 
 ## Usage
 
@@ -171,7 +175,7 @@ When optimizing, make sure to include i18next in the module(s) where the plugin 
 
 ### Inlining locales
 
-The plugin supports inlining of locales. When inlining, the plugin will load all the locale files and add them to the final file. After the build process, i18next doesn't have to dynamicly load any locales anymore.
+The plugin supports inlining of locales when optimizing. When inlining, the plugin will load all the locale files and add them to the final build file. After the build process, i18next doesn't have to dynamicly load any locales anymore. This is for example usefull when using Almond to optimize the code to a single file where dynamic code loading is not possible anymore.
 
 #### Build setup
 
@@ -187,7 +191,7 @@ The plugin supports inlining of locales. When inlining, the plugin will load all
 
 #### Notes
 
-- Currently inlining locales is only supported for single module builds<br>
+- Currently inlining locales is only supported for single file builds<br>
 - The <i>supportedLngs</i> option is needed for inlining locales (see [Advanced options](#advanced-options))
 
 ## License
