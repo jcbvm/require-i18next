@@ -78,9 +78,18 @@ define(["i18next"], function(i18next) {
             };
         },
 
-        load: function(name, req, onload, config) {
+        normalize: function(name, normalize) {
             var parsedName = plugin.parseName(name), 
-                options = f.extend({}, config.i18next), 
+                namespaces = parsedName.namespaces, 
+                module = parsedName.module;
+
+            module += (module.substr(module.length-1) !== "/" ? "/" : "");
+            return normalize(module) + (namespaces ? ":" + namespaces.join(",") : "");
+        },
+
+        load: function(name, req, onload, config) {
+            var options = f.extend({}, config.i18next),
+                parsedName = plugin.parseName(name), 
                 namespaces = parsedName.namespaces, 
                 module = parsedName.module, 
                 supportedLngs = options.supportedLngs;
@@ -108,6 +117,13 @@ define(["i18next"], function(i18next) {
 
             // Set a custom load function
             options.customLoad = function(lng, ns, opts, done) {
+                var defaultNs = opts.ns.defaultNs;
+
+                // Check if given namespace is requested by current module
+                if (ns !== defaultNs && namespaces.indexOf(ns) == -1) {
+                    done(null, plugin.getResources(lng, ns));
+                    return;
+                }
 
                 // Check for already loaded resource
                 if (plugin.resourceExists(module, lng, ns)) {
@@ -123,23 +139,13 @@ define(["i18next"], function(i18next) {
                 }
 
                 // Define resource url
-                var url = req.toUrl(module + (module.substr(module.length - 1) !== "/" ? "/" : "") + 
-                        f.applyReplacement(opts.resGetPath, {lng : lng, ns : ns}));
+                opts = f.extend({}, opts);
+                opts.resGetPath = req.toUrl(module + opts.resGetPath);
 
                 // Make the request
-                f.ajax({
-                    url: url,
-                    dataType: "json",
-                    async: opts.async,
-                    success: function(data, status, xhr) {
-                        plugin.addResource(module, lng, ns, data);
-                        f.log("loaded: " + url);
-                        done(null, plugin.getResources(lng, ns));
-                    },
-                    error: function(xhr, status, error) {
-                        f.log("failed loading: " + url);
-                        done(error, {});
-                    }
+                i18next.sync._fetchOne(lng, ns, opts, function(err, data) {
+                    plugin.addResource(module, lng, ns, data);
+                    done(err, plugin.getResources(lng, ns));
                 });
             };
 

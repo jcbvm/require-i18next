@@ -1,3 +1,5 @@
+QUnit.config.autostart = false;
+
 require.config({
     map: {
         '*': {
@@ -8,3 +10,4 @@ require.config({
     	'i18next': '../bower_components/i18next/i18next.amd'
     }
 });
+

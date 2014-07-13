@@ -1,23 +1,23 @@
 {
-    "name": "require-i18next",
-    "version": "0.4.0",
-    "license": "MIT",
-    "authors": [
-        "Jacob van Mourik"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/jcbvm/require-i18next.git"
-    },
-    "main": [
-        "require-i18next/i18next",
-        "require-i18next/i18next-builder"
-    ],
-    "dependencies": {
-        "i18next": "~1.7.2",
-        "requirejs": "~2.1.11"
-    },
-    "devDependencies": {
-        "qunit": "~1.14.0"
-    }
+  "name": "require-i18next",
+  "version": "0.4.0",
+  "license": "MIT",
+  "authors": [
+    "Jacob van Mourik"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jcbvm/require-i18next.git"
+  },
+  "main": [
+    "require-i18next/i18next",
+    "require-i18next/i18next-builder"
+  ],
+  "dependencies": {
+    "i18next": "~1.7.2",
+    "requirejs": "~2.1.11"
+  },
+  "devDependencies": {
+    "qunit": "~1.14.0"
+  }
 }

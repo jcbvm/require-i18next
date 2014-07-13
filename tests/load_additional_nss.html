@@ -5,12 +5,12 @@
     <title>Load (default namespace with multiple additional)</title>
     <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css">
     <script src="../bower_components/qunit/qunit/qunit.js"></script>
-    <script data-main="config" src="../bower_components/requirejs/require.js"></script>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="./config.js"></script>
 </head>
 <body>
     <div id="qunit"></div>
     <script>
-        QUnit.config.autostart = false;
         require(['load_additional_nss']);
     </script>
 </body>
