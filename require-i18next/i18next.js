@@ -134,7 +134,7 @@ define(["i18next"], function(i18next) {
                 // Check for language/namespace support
                 if (supportedLngs && (!supportedLngs[lng] || supportedLngs[lng].indexOf(ns) == -1)) {
                     f.log("no locale support found for " + lng + " with namespace " + ns);
-                    done(null, {});
+                    done(null, plugin.getResources(lng, ns));
                     return;
                 }
 
