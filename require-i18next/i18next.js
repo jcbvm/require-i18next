@@ -117,23 +117,24 @@ define(["i18next"], function(i18next) {
 
             // Set a custom load function
             options.customLoad = function(lng, ns, opts, done) {
-                var defaultNs = opts.ns.defaultNs;
+                var defaultNs = opts.ns.defaultNs,
+                    fetch = true;
 
                 // Check if given namespace is requested by current module
                 if (ns !== defaultNs && namespaces.indexOf(ns) == -1) {
-                    done(null, plugin.getResources(lng, ns));
-                    return;
+                    fetch = false;
                 }
-
                 // Check for already loaded resource
-                if (plugin.resourceExists(module, lng, ns)) {
-                    done(null, plugin.getResources(lng, ns));
-                    return;
+                else if (plugin.resourceExists(module, lng, ns)) {
+                    fetch = false;
+                }
+                // Check for language/namespace support
+                else if (supportedLngs && (!supportedLngs[lng] || supportedLngs[lng].indexOf(ns) == -1)) {
+                    f.log("no locale support found for " + lng + " with namespace " + ns);
+                    fetch = false;
                 }
 
-                // Check for language/namespace support
-                if (supportedLngs && (!supportedLngs[lng] || supportedLngs[lng].indexOf(ns) == -1)) {
-                    f.log("no locale support found for " + lng + " with namespace " + ns);
+                if (!fetch) {
                     done(null, plugin.getResources(lng, ns));
                     return;
                 }
