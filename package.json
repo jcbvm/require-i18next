@@ -13,5 +13,8 @@
     "grunt-contrib-qunit": "~0.5.2",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-replace": "~0.7.8"
+  },
+  "scripts": {
+    "test": "grunt test"
   }
 }
