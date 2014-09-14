@@ -10,6 +10,7 @@ define(["i18next"], function(i18next) {
 
     var plugin,
         supportedLngs,
+        defaultNss,
         resStore = {},
         f = i18next.functions,
         o = i18next.options;
@@ -90,27 +91,43 @@ define(["i18next"], function(i18next) {
         load: function(name, req, onload, config) {
             var options = f.extend({}, config.i18next),
                 parsedName = plugin.parseName(name), 
-                namespaces = parsedName.namespaces, 
                 module = parsedName.module, 
-                supportedLngs = options.supportedLngs;
+                supportedLngs = options.supportedLngs,
+                namespaces;
 
             // Check for scoped supported languages value
             if (supportedLngs && supportedLngs[module]) {
                 supportedLngs = supportedLngs[module];
             }
 
+            // Initialize default namespaces
+            if (!defaultNss) {
+                if (!options.ns || typeof options.ns == "string") {
+                    defaultNss = [options.ns || o.ns];
+                } else {
+                    defaultNss = options.ns.namespaces;
+                }
+            }
+
+            // Setup namespaces
+            namespaces = defaultNss.slice();
+            f.each(parsedName.namespaces, function(idx, val) {
+                if (namespaces.indexOf(val) == -1) {
+                    namespaces.push(val);
+                }
+            });
+
             // Set namespaces
             if (typeof o.ns == "string") {
-                namespaces.unshift(options.ns || o.ns);
                 options.ns = {
                     defaultNs: namespaces[0],
                     namespaces: namespaces
                 };
             } else {
-                options.ns = o.ns;
-                f.each(namespaces, function(idx, namespace) {
-                    if (options.ns.namespaces.indexOf(namespace) == -1) {
-                        options.ns.namespaces.push(namespace);
+                options.ns = f.extend({}, o.ns);
+                f.each(namespaces, function(idx, val) {
+                    if (options.ns.namespaces.indexOf(val) == -1) {
+                        options.ns.namespaces.push(val);
                     }
                 });
             }
@@ -121,7 +138,7 @@ define(["i18next"], function(i18next) {
                     fetch = true;
 
                 // Check if given namespace is requested by current module
-                if (ns !== defaultNs && namespaces.indexOf(ns) == -1) {
+                if (namespaces.indexOf(ns) == -1) {
                     fetch = false;
                 }
                 // Check for already loaded resource
