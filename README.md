@@ -171,6 +171,8 @@ With the above example when loading locales with "i18n!path/to/locales1"only the
 
 ## Optimization
 
+When optimizing, make sure to include the i18next lib in the module(s) where the plugin is used (because the plugin's builder doesn't have a dependency on it).
+
 ### Inlining locales
 
 The plugin supports inlining of locales when optimizing. When inlining, the plugin will load all the locale files and add them to the final build file. After the build process, i18next doesn't have to dynamicly load any locales anymore. This is for example usefull when using Almond to optimize the code to a single file where dynamic code loading is not possible anymore.
@@ -185,7 +187,7 @@ The plugin supports inlining of locales when optimizing. When inlining, the plug
     // Plugin code is not needed anymore when inlining locales
     stubModules: ["path/to/require/i18next/plugin"],
     
-    // Include i18next lib, because the plugin's builder has no dependency on it
+    // Include i18next lib, because the plugin's builder doesn't have a dependency on it
     include: ["i18next"]
 })
 ```
