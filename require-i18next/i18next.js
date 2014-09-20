@@ -21,29 +21,31 @@ define(["i18next"], function(i18next) {
 
         /**
          * Checks to see if there exists a resource with the given 
-         * module, language and namespace in the store. 
+         * resource path, language and namespace in the store. 
          * 
-         * @param {String} module The module name
+         * @param {String} resPath The resource path
          * @param {String} lng The language
          * @param {String} ns The namespace
          * @returns {Boolean} If the resource exists in the store
          */
-        resourceExists: function(module, lng, ns) {
-            return resStore[module] && resStore[module][lng] && resStore[module][lng][ns];
+        resourceExists: function(resPath, lng, ns) {
+            return resStore[resPath] 
+                && resStore[resPath][lng] 
+                && resStore[resPath][lng][ns];
         },
 
         /**
          * Adds a resource to the store (overrides existing one).
          * 
-         * @param {String} module The module name
+         * @param {String} resPath The resource path
          * @param {String} lng The language
          * @param {String} ns The namespace
          * @param {Object} data The resource data
          */
-        addResource: function(module, lng, ns, data) {
-            resStore[module] = resStore[module] || {};
-            resStore[module][lng] = resStore[module][lng] || {};
-            resStore[module][lng][ns] = data;
+        addResource: function(resPath, lng, ns, data) {
+            resStore[resPath] = resStore[resPath] || {};
+            resStore[resPath][lng] = resStore[resPath][lng] || {};
+            resStore[resPath][lng][ns] = data;
         },
 
         /**
@@ -55,9 +57,9 @@ define(["i18next"], function(i18next) {
          */
         getResources: function(lng, ns) {
             var data = {};
-            f.each(resStore, function(module) {
-                if (resStore[module][lng] && resStore[module][lng][ns]) {
-                    f.extend(data, resStore[module][lng][ns]);
+            f.each(resStore, function(resPath) {
+                if (resStore[resPath][lng] && resStore[resPath][lng][ns]) {
+                    f.extend(data, resStore[resPath][lng][ns]);
                 }
             });
             return data;
@@ -69,36 +71,27 @@ define(["i18next"], function(i18next) {
          * the locales and the part after the : the additional namespace(s) to load.
          * 
          * @param {String} name The resource name
-         * @returns {Object} Object containing module name and namespaces
+         * @returns {Object} Object containing resource path and namespaces
          */
         parseName: function(name) {
             var splitted = name.split(":");
             return {
-                module: splitted[0],
+                resPath: splitted[0] + (/\/$/.test(splitted[0]) ? "" : "/"),
                 namespaces: splitted[1] ? splitted[1].split(",") : []
             };
-        },
-
-        normalize: function(name, normalize) {
-            var parsedName = plugin.parseName(name), 
-                namespaces = parsedName.namespaces, 
-                module = parsedName.module;
-
-            module += (module.substr(module.length-1) !== "/" ? "/" : "");
-            return normalize(module) + (namespaces ? ":" + namespaces.join(",") : "");
         },
 
         load: function(name, req, onload, config) {
             var options = f.extend({}, config.i18next),
                 parsedName = plugin.parseName(name), 
-                module = parsedName.module, 
+                resPath = parsedName.resPath, 
                 supportedLngs, namespaces;
 
             // Check for (scoped) supported languages
             if (options.supportedLngs) {
                 supportedLngs = 
-                    options.supportedLngs[module] || 
-                    options.supportedLngs[module.replace(/\/$/,'')] || 
+                    options.supportedLngs[resPath] || 
+                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
                     options.supportedLngs;
             }
 
@@ -143,8 +136,8 @@ define(["i18next"], function(i18next) {
                 if (namespaces.indexOf(ns) == -1) {
                     fetch = false;
                 }
-                // Check for already loaded resource
-                else if (plugin.resourceExists(module, lng, ns)) {
+                // Check for already loaded resPath
+                else if (plugin.resourceExists(resPath, lng, ns)) {
                     fetch = false;
                 }
                 // Check for language/namespace support
@@ -160,11 +153,11 @@ define(["i18next"], function(i18next) {
 
                 // Define resource url
                 opts = f.extend({}, opts);
-                opts.resGetPath = req.toUrl(module + opts.resGetPath);
+                opts.resGetPath = req.toUrl(resPath + opts.resGetPath);
 
                 // Make the request
                 i18next.sync._fetchOne(lng, ns, opts, function(err, data) {
-                    plugin.addResource(module, lng, ns, data);
+                    plugin.addResource(resPath, lng, ns, data);
                     done(err, plugin.getResources(lng, ns));
                 });
             };
