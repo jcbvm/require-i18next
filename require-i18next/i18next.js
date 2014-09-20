@@ -92,12 +92,14 @@ define(["i18next"], function(i18next) {
             var options = f.extend({}, config.i18next),
                 parsedName = plugin.parseName(name), 
                 module = parsedName.module, 
-                supportedLngs = options.supportedLngs,
-                namespaces;
+                supportedLngs, namespaces;
 
-            // Check for scoped supported languages value
-            if (supportedLngs && supportedLngs[module]) {
-                supportedLngs = supportedLngs[module];
+            // Check for (scoped) supported languages
+            if (options.supportedLngs) {
+                supportedLngs = 
+                    options.supportedLngs[module] || 
+                    options.supportedLngs[module.replace(/\/$/,'')] || 
+                    options.supportedLngs;
             }
 
             // Initialize default namespaces
