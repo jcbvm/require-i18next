@@ -8,6 +8,10 @@ require.config({
     },
     paths: {
     	'i18next': '../bower_components/i18next/i18next.amd'
+    },
+    i18next: {
+        lng: 'en',
+        fallbackLng: 'en'
     }
 });
 

@@ -1,7 +1,9 @@
 define(['i18n'], function(plugin) {
     var translation = {
         test: 'hello',
-        test_module: 'hello'
+        module: {
+            test: 'hello'
+        }
     };
     var namespace1 = {
         test: 'hello1'
@@ -12,9 +14,9 @@ define(['i18n'], function(plugin) {
     require(['i18n!../tests:namespace1,namespace2'], function(i18n) {
         require(['i18n!../tests/module'], function(i18n) {
             test('resources', function() {
-                deepEqual(plugin.getResources('dev', 'translation'), translation);
-                deepEqual(plugin.getResources('dev', 'namespace1'), namespace1);
-                deepEqual(plugin.getResources('dev', 'namespace2'), namespace2);
+                deepEqual(plugin.getResources('en', 'translation'), translation);
+                deepEqual(plugin.getResources('en', 'namespace1'), namespace1);
+                deepEqual(plugin.getResources('en', 'namespace2'), namespace2);
             });
             test('namespaces', function() {
                 deepEqual(i18n.options.ns, {
@@ -23,10 +25,10 @@ define(['i18n'], function(plugin) {
                 });
             });
             test('translate', function() {
-                strictEqual(i18n.t('test'), 'hello');
-                strictEqual(i18n.t('test_module'), 'hello');
-                strictEqual(i18n.t('namespace1:test'), 'hello1');
-                strictEqual(i18n.t('namespace2:test'), 'hello2');
+                strictEqual(i18n.t('test'), translation.test);
+                strictEqual(i18n.t('module.test'), translation.module.test);
+                strictEqual(i18n.t('namespace1:test'), namespace1.test);
+                strictEqual(i18n.t('namespace2:test'), namespace2.test);
             });
             start();
         });

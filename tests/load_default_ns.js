@@ -4,7 +4,7 @@ define(['i18n'], function(plugin) {
     };
     require(['i18n!../tests'], function(i18n) {
         test('resources', function() {
-            deepEqual(plugin.getResources('dev', 'translation'), translation);
+            deepEqual(plugin.getResources('en', 'translation'), translation);
         });
         test('namespaces', function() {
             deepEqual(i18n.options.ns, {
@@ -13,7 +13,7 @@ define(['i18n'], function(plugin) {
             });
         });
         test('translate', function() {
-            strictEqual(i18n.t('test'), 'hello');
+            strictEqual(i18n.t('test'), translation.test);
         });
         start();
     });

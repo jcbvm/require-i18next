@@ -1,15 +1,15 @@
 define(['i18n'], function(plugin) {
     test('name parsing', function() {
         deepEqual(plugin.parseName('locales'), {
-            module: 'locales',
+            resPath: 'locales/',
             namespaces: []
         });
         deepEqual(plugin.parseName('locales:ns1'), {
-            module: 'locales',
+            resPath: 'locales/',
             namespaces: ['ns1']
         });
         deepEqual(plugin.parseName('locales:ns1,ns2'), {
-            module: 'locales',
+            resPath: 'locales/',
             namespaces: ['ns1', 'ns2']
         });
     });
