@@ -10,6 +10,7 @@
 
     var data,
         dataWritten,
+        defaultNss,
         options = {
             ns: "translation",
             resGetPath: "locales/__lng__/__ns__.json",
@@ -111,21 +112,34 @@
                         "property in the build options.");
             }
 
-            var supportedLngs, url, content,
-                parsedName = parseName(name),
-                namespaces = parsedName.namespaces,
-                resPath = parsedName.resPath;
+            var parsedName = parseName(name),
+                resPath = parsedName.resPath,
+                supportedLngs, namespaces, url, content;
 
-            // Setup options when running for the first time
+            // Initialize data
             if (!data) {
                 data = config.i18next;
                 extend(options, data);
             }
 
-            // Add default namespace to namespaces list
-            namespaces.push(options.ns);
+            // Initialize default namespaces
+            if (!defaultNss) {
+                if (typeof options.ns == "string") {
+                    defaultNss = [options.ns];
+                } else {
+                    defaultNss = options.ns.namespaces;
+                }
+            }
 
-            // Check for (scoped) supported languages
+            // Setup namespaces
+            namespaces = defaultNss.slice();
+            each(parsedName.namespaces, function(val) {
+                if (namespaces.indexOf(val) == -1) {
+                    namespaces.push(val);
+                }
+            });
+
+            // Setup (scoped) supported languages
             if (options.supportedLngs) {
                 supportedLngs = 
                     options.supportedLngs[resPath] || 
