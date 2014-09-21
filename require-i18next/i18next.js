@@ -87,14 +87,6 @@ define(["i18next"], function(i18next) {
                 resPath = parsedName.resPath, 
                 supportedLngs, namespaces;
 
-            // Check for (scoped) supported languages
-            if (options.supportedLngs) {
-                supportedLngs = 
-                    options.supportedLngs[resPath] || 
-                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
-                    options.supportedLngs;
-            }
-
             // Initialize default namespaces
             if (!defaultNss) {
                 if (!options.ns || typeof options.ns == "string") {
@@ -111,6 +103,14 @@ define(["i18next"], function(i18next) {
                     namespaces.push(val);
                 }
             });
+
+            // Setup (scoped) supported languages
+            if (options.supportedLngs) {
+                supportedLngs = 
+                    options.supportedLngs[resPath] || 
+                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
+                    options.supportedLngs;
+            }
 
             // Set namespaces
             if (typeof o.ns == "string") {
