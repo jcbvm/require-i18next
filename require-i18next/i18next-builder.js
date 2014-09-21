@@ -85,12 +85,12 @@
      * the locales and the part after the : the additional namespace(s) to load.
      * 
      * @param {String} name The resource name
-     * @returns {Object} Object containing module name and namespaces
+     * @returns {Object} Object containing resource path and namespaces
      */
     function parseName(name) {
         var splitted = name.split(":");
         return {
-            module: splitted[0],
+            resPath: splitted[0] + (/\/$/.test(splitted[0]) ? "" : "/"),
             namespaces: splitted[1] ? splitted[1].split(",") : []
         };
     }
@@ -111,10 +111,10 @@
                         "property in the build options.");
             }
 
-            var languages, url, content,
+            var supportedLngs, url, content,
                 parsedName = parseName(name),
                 namespaces = parsedName.namespaces,
-                module = parsedName.module;
+                resPath = parsedName.resPath;
 
             // Setup options when running for the first time
             if (!data) {
@@ -125,22 +125,21 @@
             // Add default namespace to namespaces list
             namespaces.push(options.ns);
 
-            // Check for scoped supported languages value
-            languages = options.supportedLngs;
-            if (languages[module]) {
-                languages = languages[module];
+            // Check for (scoped) supported languages
+            if (options.supportedLngs) {
+                supportedLngs = 
+                    options.supportedLngs[resPath] || 
+                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
+                    options.supportedLngs;
             }
-
-            // Fix module ending slash
-            module += module.substr(module.length-1) !== "/" ? "/" : "";
 
             // Load all needed resources
             options.resStore = options.resStore || {};
-            each(languages, function(nss, lng) {
+            each(supportedLngs, function(nss, lng) {
                 options.resStore[lng] = options.resStore[lng] || {};
                 each(nss, function(ns) {
                     if (namespaces.indexOf(ns) !== -1) {
-                        url = req.toUrl(module + options.resGetPath
+                        url = req.toUrl(resPath + options.resGetPath
                                 .replace(options.interpolationPrefix + "ns" + options.interpolationSuffix, ns)
                                 .replace(options.interpolationPrefix + "lng" + options.interpolationSuffix, lng));
                         content = JSON.parse(loadFile(url));
