@@ -76,7 +76,7 @@ define(["i18next"], function(i18next) {
         parseName: function(name) {
             var splitted = name.split(":");
             return {
-                resPath: splitted[0] + (/\/$/.test(splitted[0]) ? "" : "/"),
+                resPath: splitted[0] ? splitted[0] + (/\/$/.test(splitted[0]) ? "" : "/") : "",
                 namespaces: splitted[1] ? splitted[1].split(",") : []
             };
         },
