@@ -19,7 +19,7 @@ define(['i18n'], function(plugin) {
             ns: ns
         }
     });
-    require(['i18n!../tests'], function(i18n) {
+    require(['i18n!'], function(i18n) {
         test('resources', function() {
             deepEqual(plugin.getResources('en', 'translation'), translation);
             deepEqual(plugin.getResources('en', 'namespace1'), namespace1);

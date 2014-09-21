@@ -5,7 +5,7 @@ define(['i18n'], function(plugin) {
     var namespace1 = {
         test: 'hello1'
     };
-    require(['i18n!../tests:namespace1'], function(i18n) {
+    require(['i18n!:namespace1'], function(i18n) {
         test('resources', function() {
             deepEqual(plugin.getResources('en', 'translation'), translation);
             deepEqual(plugin.getResources('en', 'namespace1'), namespace1);

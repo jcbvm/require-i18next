@@ -2,7 +2,7 @@ define(['i18n'], function(plugin) {
     var translation = {
         test: 'hello'
     };
-    require(['i18n!../tests'], function(i18n) {
+    require(['i18n!'], function(i18n) {
         test('resources', function() {
             deepEqual(plugin.getResources('en', 'translation'), translation);
         });

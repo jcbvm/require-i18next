@@ -14,7 +14,7 @@ define(['i18n'], function(plugin) {
             }
         }
     });
-    require(['i18n!../tests:namespace1,namespace2'], function(i18n) {
+    require(['i18n!:namespace1,namespace2'], function(i18n) {
         test('resources', function() {
             deepEqual(plugin.getResources('nl', 'translation'), translation);
             deepEqual(plugin.getResources('nl', 'namespace1'), namespace1);

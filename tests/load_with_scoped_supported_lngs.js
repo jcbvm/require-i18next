@@ -16,18 +16,18 @@ define(['i18n'], function(plugin) {
             lng: 'nl',
             fallbackLng: 'en',
             supportedLngs: {
-                '../tests/': { // test with ending slash
+                '': {
                     en: ['translation'],
                     nl: ['translation', 'namespace1']
                 },
-                '../tests/module': { // test without ending slash
+                'module': {
                     en: ['translation']
                 }
             }
         }
     });
-    require(['i18n!../tests:namespace1,namespace2'], function() {
-        require(['i18n!../tests/module:namespace1,namespace2'], function(i18n) {
+    require(['i18n!:namespace1,namespace2'], function() {
+        require(['i18n!module:namespace1,namespace2'], function(i18n) {
             test('resources', function() {
                 deepEqual(plugin.getResources('nl', 'translation'), nlTranslation);
                 deepEqual(plugin.getResources('nl', 'namespace1'), nlNamespace1);

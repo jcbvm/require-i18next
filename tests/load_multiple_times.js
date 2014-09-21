@@ -8,9 +8,9 @@ define(['i18n'], function(plugin) {
     var namespace2 = {
         test: 'hello2'
     };
-    require(['i18n!../tests'], function() {
-        require(['i18n!../tests:namespace1'], function() {
-            require(['i18n!../tests:namespace2'], function(i18n) {
+    require(['i18n!'], function() {
+        require(['i18n!:namespace1'], function() {
+            require(['i18n!:namespace2'], function(i18n) {
                 test('resources', function() {
                     deepEqual(plugin.getResources('en', 'translation'), translation);
                     deepEqual(plugin.getResources('en', 'namespace1'), namespace1);
