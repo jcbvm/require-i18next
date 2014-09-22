@@ -1,4 +1,4 @@
-# RequireJS i18next Plugin Changelog
+# require-i18next changelog
 
 ### v0.4.0 (January 19, 2014)
 
