@@ -1,7 +1,7 @@
 /**
  * RequireJS i18next Plugin
  * 
- * @version 0.4.0
+ * @version 0.4.1
  * @copyright 2013-2014 Jacob van Mourik
  * @license MIT
  */
@@ -16,7 +16,7 @@ define(["i18next"], function(i18next) {
         o = i18next.options;
 
     plugin = {
-        version: "0.4.0",
+        version: "0.4.1",
         pluginBuilder: "./i18next-builder",
 
         /**
