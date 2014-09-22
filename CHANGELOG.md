@@ -1,5 +1,12 @@
 # require-i18next changelog
 
+### v0.4.1 (September 22, 2014)
+
+* [BUGFIX] Properly handle namespaces when they are passed in as a object in config, see #11.
+* [BUGFIX] Do not add ending slash when module name is an empty string, see #11.
+* [BUGFIX] Fixed namespaces issue when loading multiple locales in a row, see #9.
+* Replaced ajax call with fetch method provided by i18next lib.
+
 ### v0.4.0 (January 19, 2014)
 
 * [BREAKING] The plugin builder no longer depends on the i18next lib (the lib should be manually added to the final build file), see #5.
