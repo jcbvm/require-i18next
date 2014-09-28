@@ -29,9 +29,7 @@ define(["i18next"], function(i18next) {
          * @returns {Boolean} If the resource exists in the store
          */
         resourceExists: function(resPath, lng, ns) {
-            return resStore[resPath] 
-                && resStore[resPath][lng] 
-                && resStore[resPath][lng][ns];
+            return resStore[resPath] && resStore[resPath][lng] && resStore[resPath][lng][ns];
         },
 
         /**

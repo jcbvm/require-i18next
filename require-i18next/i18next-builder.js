@@ -51,18 +51,17 @@
      * @returns {String} The contents of the file
      */
     function loadFile(path) {
-        if (typeof process !== "undefined" && process.versions 
-                && !!process.versions.node && !process.versions["node-webkit"]) {
-            var file = fs.readFileSync(path, "utf8");
+        var file, stringBuffer, line, lineSeparator, input;
+        if (typeof process !== "undefined" && process.versions && !!process.versions.node && !process.versions["node-webkit"]) {
+            file = fs.readFileSync(path, "utf8");
             if (file.indexOf("\uFEFF") === 0) {
                 return file.substring(1);
             }
             return file;
         } else {
-            var stringBuffer, line,
-                file = new java.io.File(path), 
-                lineSeparator = java.lang.System.getProperty("line.separator"), 
-                input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), "utf-8"));
+            file = new java.io.File(path);
+            lineSeparator = java.lang.System.getProperty("line.separator");
+            input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), "utf-8"));
             try {
                 stringBuffer = new java.lang.StringBuffer();
                 line = input.readLine();

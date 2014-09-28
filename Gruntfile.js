@@ -4,6 +4,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-replace');    
     
     grunt.initConfig({
@@ -73,9 +74,12 @@ module.exports = function(grunt) {
                     banner: '/* RequireJS i18next Plugin v<%= data.version %> | (c) <%= data.copyright %> | MIT Licensed */\n'
                 }
             }
+        },
+        jshint: {
+            all: ['require-i18next/i18next.js', 'require-i18next/i18next-builder.js', 'tests/*.js']
         }
     });
     
     grunt.registerTask('test', ['connect', 'qunit']);
-    grunt.registerTask('default', ['test', 'replace', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'test', 'replace', 'uglify']);
 };
