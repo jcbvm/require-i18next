@@ -8,39 +8,25 @@
 (function() {
     "use strict";
 
-    var data,
-        dataWritten,
-        defaultNss,
-        options = {
-            ns: "translation",
-            resGetPath: "locales/__lng__/__ns__.json",
-            interpolationPrefix: "__",
-            interpolationSuffix: "__"
-        };
+    var data, buildConfig;
 
-    // Based on underscore.js
-    function each(obj, iterator, context) {
-        if (!obj) return;
-        if (obj.length === +obj.length) {
-            for (var i = 0, length = obj.length; i < length; i++) {
-                iterator.call(context, obj[i], i);
-            }
-        } else {
-            for (var prop in obj) {
-                iterator.call(context, obj[prop], prop);
+    /**
+     * Deeply extends an object with another object
+     * 
+     * @param {Object} obj The object to extend
+     * @param {Object} src The object to extend with
+     * @returns {Object} The extended object
+     */
+    function extend(obj, src) {
+        obj = obj || {};
+        for (var prop in src) {
+            if (!src.hasOwnProperty(prop)) continue;
+            if (Object.prototype.toString.call(src[prop]) === '[object Object]') {
+                obj[prop] = extend(obj[prop], src[prop]);
+            } else {
+                obj[prop] = src[prop];
             }
         }
-    }
-
-    // Based on underscore.js
-    function extend(obj) {
-        each(Array.prototype.slice.call(arguments, 1), function(source) {
-            if (source) {
-                for (var prop in source) {
-                    obj[prop] = source[prop];
-                }
-            }
-        });
         return obj;
     }
 
@@ -97,67 +83,65 @@
 
     define({
         load: function(name, req, onload, config) {
-            // Skip the process if i18next resources will not be inlined 
-            // or supported languages is not defined
-            if (!config.inlineI18next || !config.i18next || !config.i18next.supportedLngs) {
-                onload();
-                return;
-            }
-
-            // Currently, inlining resources is only supported for single file builds 
-            if (config.modules.length > 1) {
-                throw new Error("The i18next plugin doesn't support inlining resources for " +
-                        "multiple module builds. To proceed, remove the inlineI18next " +
-                        "property in the build options.");
-            }
-
             var parsedName = parseName(name),
                 resPath = parsedName.resPath,
-                supportedLngs, namespaces, url, content;
+                options, supportedLngs, namespaces, url, content;
 
-            // Initialize data
-            if (!data) {
-                data = config.i18next;
-                extend(options, data);
+            // Skip the process if i18next inlining is disabled
+            if (!config.inlineI18next) {
+                return onload();
+            }
+            // Skip the process if i18next config is not defined
+            if (!config.i18next) {
+                console.log("Skipping i18next inlining, could not find i18next config.");
+                return onload();
+            }
+            // Skip the process if supportedLngs is not defined in i18next config
+            if (!config.i18next.supportedLngs) {
+                console.log("Skipping i18next inlining, could not find supportedLngs option in i18next config.");
+                return onload();
             }
 
-            // Initialize default namespaces
-            if (!defaultNss) {
-                if (typeof options.ns == "string") {
-                    defaultNss = [options.ns];
-                } else {
-                    defaultNss = options.ns.namespaces;
-                }
+            // Setup build config and data
+            if (!buildConfig) {
+                buildConfig = config;
+                data = extend({}, config.i18next);
+                delete data.supportedLngs;
             }
+
+            // Setup options
+            options = extend({
+                ns: "translation",
+                resGetPath: "locales/__lng__/__ns__.json",
+                interpolationPrefix: "__",
+                interpolationSuffix: "__"
+            }, config.i18next);
 
             // Setup namespaces
-            namespaces = defaultNss.slice();
-            each(parsedName.namespaces, function(val) {
-                if (namespaces.indexOf(val) == -1) {
-                    namespaces.push(val);
+            namespaces = typeof options.ns == "string" ? [options.ns] : options.ns.namespaces;
+            parsedName.namespaces.forEach(function(ns) {
+                if (namespaces.indexOf(ns) == -1) {
+                    namespaces.push(ns);
                 }
             });
 
             // Setup (scoped) supported languages
-            if (options.supportedLngs) {
-                supportedLngs = 
-                    options.supportedLngs[resPath] || 
+            supportedLngs = options.supportedLngs[resPath] || 
                     options.supportedLngs[resPath.replace(/\/$/,'')] || 
                     options.supportedLngs;
-            }
 
             // Load all needed resources
-            options.resStore = options.resStore || {};
-            each(supportedLngs, function(nss, lng) {
-                options.resStore[lng] = options.resStore[lng] || {};
-                each(nss, function(ns) {
+            data.resStore = data.resStore || {};
+            Object.keys(supportedLngs).forEach(function(lng) { 
+                data.resStore[lng] = data.resStore[lng] || {};
+                supportedLngs[lng].forEach(function(ns) {
                     if (namespaces.indexOf(ns) !== -1) {
+                        data.resStore[lng][ns] = data.resStore[lng][ns] || {};
                         url = req.toUrl(resPath + options.resGetPath
                                 .replace(options.interpolationPrefix + "ns" + options.interpolationSuffix, ns)
                                 .replace(options.interpolationPrefix + "lng" + options.interpolationSuffix, lng));
                         content = JSON.parse(loadFile(url));
-                        options.resStore[lng][ns] = options.resStore[lng][ns] || {};
-                        extend(options.resStore[lng][ns], content);
+                        extend(data.resStore[lng][ns], content);
                     }
                 });
             });
@@ -166,21 +150,23 @@
         },
 
         write: function(pluginName, moduleName, write) {
-            if (!data) return;
-            if (!dataWritten) {
-                dataWritten = true;
-                data.resStore = options.resStore;
-                delete data.supportedLngs;
-                write.asModule("i18next-init",
-                        "define(['i18next'], function(i18next) {\n" +
-                            "\ti18next.init(" + JSON.stringify(data) + ");\n" +
-                            "\treturn i18next;\n" +
-                        "});");
+            if (!buildConfig) return;
+
+            // For each module initialize i18next with the globally defined config
+            write("define('"+ pluginName + "!" + moduleName + "',['i18next'],function(i18n){i18n.init(window._i18n);return i18n;});\n");
+        },
+
+        onLayerEnd: function(write) {
+            if (!buildConfig) return;
+
+            // Save the config in a globally defined variable which modules can use to initialize i18next
+            if (buildConfig.modules.length > 1) {
+                // For multiple module builds extend the global config with any previously defined global config
+                write("window._i18n = (" + extend.toString() + ")(window._i18n," + JSON.stringify(data) + ");\n");
+            } else {
+                // For single module builds just define the global config
+                write("window._i18n = " + JSON.stringify(data) + ";\n");
             }
-            write.asModule(pluginName + "!" + moduleName,
-                    "define(['i18next-init'], function(i18next) {\n" +
-                        "\treturn i18next;\n" +
-                    "});");
         }
     });
 })();
