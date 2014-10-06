@@ -18,12 +18,11 @@ directory of your locales.
 
 ```javascript
 require(["some/module", "i18n!path/to/locales"], function(module, i18n) {
-        // The i18n variable is an instance of i18next
-        // So right here you can for example call i18n.t("some_key")
-        // to get the translation for "some_key"
-        // (See the i18next docs for more details)
-    }
-);
+    // The i18n variable is an instance of i18next
+    // So right here you can for example call i18n.t("some_key")
+    // to get the translation for "some_key"
+    // (See the i18next docs for more details)
+});
 ```
 
 ### Loading additional namespaces
@@ -36,12 +35,11 @@ immediately when loading a locale by doing:
 
 ```javascript
 require(["some/module", "i18n!path/to/locales:namespace1,namespace2"], function(module, i18n) {
-        // The additional namespaces "namespace1" and "namespace2" are now loaded
-        // So right now we can for example call i18n.t("namespace1:some_key")
-        // to get the translation for "some_key" in namespace "namespace1"
-        // (See the i18next docs for more details)
-    }
-);
+    // The additional namespaces "namespace1" and "namespace2" are now loaded
+    // So right now we can for example call i18n.t("namespace1:some_key")
+    // to get the translation for "some_key" in namespace "namespace1"
+    // (See the i18next docs for more details)
+});
 ```
 
 ### Special notes
