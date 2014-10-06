@@ -17,11 +17,10 @@ requirejs by simply using the prefix i18n! followed by a path to the
 directory of your locales.
 
 ```javascript
-require(["some/module", "i18n!path/to/locales"],
-    function(module, i18n) {
+require(["some/module", "i18n!path/to/locales"], function(module, i18n) {
         // The i18n variable is an instance of i18next
-        // So right here you can for example call i18n.t("some key")
-        // to get the translation for "some key"
+        // So right here you can for example call i18n.t("some_key")
+        // to get the translation for "some_key"
         // (See the i18next docs for more details)
     }
 );
@@ -36,10 +35,11 @@ This plugin gives you the option to load additional namespaces
 immediately when loading a locale by doing:
 
 ```javascript
-require(["some/module", "i18n!path/to/locales:namespace1,namespace2"],
-    function(module, i18n) {
-        // The additional namespaces "namespace1" and "namespace2" are
-        // now loaded and ready for use
+require(["some/module", "i18n!path/to/locales:namespace1,namespace2"], function(module, i18n) {
+        // The additional namespaces "namespace1" and "namespace2" are now loaded
+        // So right now we can for example call i18n.t("namespace1:some_key")
+        // to get the translation for "some_key" in namespace "namespace1"
+        // (See the i18next docs for more details)
     }
 );
 ```
@@ -90,7 +90,7 @@ i18n.t("translations1.key1");
 
 This way, loading both locales will not override any existing translations within the same namespace.
 
-## Configuration
+## Setup and Configuration
 
 ### Plugin setup
 
@@ -111,7 +111,7 @@ requirejs.config({
 
 Now you can use the i18n! prefix to load locales.
 
-### Basic options
+### Basic configuration
 
 Normally i18next is initialized with options by calling i18next.init().This plugin makes it able to define the i18next options in the requirejs configuration:
 
@@ -130,7 +130,7 @@ requirejs.config({
 
 The plugin will pass the options to i18next when loading locales.
 
-### Advanced options
+### Advanced configuration
 
 Currently i18next will try to load the locales it has detected from a user's browser or cookie, first by trying the specific locale, secondly by trying the unspecific locale and finally by trying the fallback locale. So for example when it has detected nl-NL, it will try to load nl-NL -> nl -> en (when en is set as fallback language). So it tries to load each locale, even if you don't have support for one of them. 
 
@@ -171,13 +171,15 @@ With the above example when loading locales with "i18n!path/to/locales1"only the
 
 ## Optimization
 
-When optimizing, make sure to include the i18next lib in the module(s) where the plugin is used (because the plugin's builder doesn't have a dependency on it).
-
 ### Inlining locales
 
-The plugin supports inlining of locales when optimizing. When inlining, the plugin will load all the locale files and add them to the final build file. After the build process, i18next doesn't have to dynamicly load any locales anymore. This is for example usefull when using Almond to optimize the code to a single file where dynamic code loading is not possible anymore.
+The plugin supports inlining of locales when optimizing with requirejs. When inlining, the plugin will load all the locale files used in each module and add them to the final build file. After the build process, i18next doesn't have to dynamicly load any locales anymore.
 
-#### Build setup
+<strong>NOTE:</strong> The <i>supportedLngs</i> option is needed for inlining locales (see [Advanced configuration](#advanced-configuration))
+
+#### Build configuration
+
+For single module builds (including Almond), your configuration might look like this:
 
 ```javascript
 ({
@@ -187,17 +189,50 @@ The plugin supports inlining of locales when optimizing. When inlining, the plug
     // Plugin code is not needed anymore when inlining locales
     stubModules: ["path/to/require/i18next/plugin"],
     
-    // Include i18next lib, because the plugin's builder doesn't have a dependency on it
-    include: ["i18next"]
+    // Add the i18next lib as dependency to the build modules which use the plugin
+    // (it is not included by the plugin when building)
+    shim: {
+        "main": ["i18next"]
+    },
+    
+    // The name of the module to build
+    name: "main",
+    
+    ...
 })
 ```
 
-#### Notes
+For multiple module builds, your configuration might look like this:
 
-- Currently inlining locales is only supported for single file builds<br>
-- The <i>supportedLngs</i> option is needed for inlining locales (see [Advanced options](#advanced-options))
+```javascript
+({
+    // Enable inlining locales
+    inlineI18next: true, 
+    
+    // Plugin code is not needed anymore when inlining locales
+    stubModules: ["path/to/require/i18next/plugin"],
+    
+    // Add the i18next lib as dependency to the build modules which use the plugin
+    // (it is not included by the plugin when building)
+    shim: {
+        "first": ["i18next"],
+        "second": ["i18next"]
+    },
+    
+    // The modules to build
+    modules: [
+        {
+            name: "first"
+        }, 
+        {
+            name: "second"
+        }
+    ],
+    
+    ...
+})
+```
 
 ## License
 
 This project is released under the MIT license.
-
