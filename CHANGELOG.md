@@ -1,5 +1,9 @@
 # require-i18next changelog
 
+### master (may become v0.5.0 or v0.4.2)
+
+* [FEATURE] Added support for inlining locales multiple module builds, see [#13](https://github.com/jcbvm/require-i18next/issues/13).
+
 ### v0.4.1 (September 22, 2014)
 
 * [BUGFIX] Properly handle namespaces when they are passed in as a object in config, see [#11](https://github.com/jcbvm/require-i18next/issues/11).
