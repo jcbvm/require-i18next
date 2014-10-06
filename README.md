@@ -175,11 +175,9 @@ With the above example when loading locales with "i18n!path/to/locales1"only the
 
 The plugin supports inlining of locales when optimizing with requirejs. When inlining, the plugin will load all the locale files used in each module and add them to the final build file. After the build process, i18next doesn't have to dynamicly load any locales anymore.
 
-<strong>NOTE:</strong> The <i>supportedLngs</i> option is needed for inlining locales (see [Advanced configuration](#advanced-configuration))
+**Note:** the <i>supportedLngs</i> option is needed for inlining locales (see [Advanced configuration](#advanced-configuration))
 
-#### Build configuration
-
-For single module builds (including Almond), your configuration might look like this:
+#### Single module build configuration
 
 ```javascript
 ({
@@ -189,7 +187,7 @@ For single module builds (including Almond), your configuration might look like 
     // Plugin code is not needed anymore when inlining locales
     stubModules: ["path/to/require/i18next/plugin"],
     
-    // Add the i18next lib as dependency to the build modules which use the plugin
+    // Add the i18next lib as dependency to the module
     // (it is not included by the plugin when building)
     shim: {
         "main": ["i18next"]
@@ -202,7 +200,7 @@ For single module builds (including Almond), your configuration might look like 
 })
 ```
 
-For multiple module builds, your configuration might look like this:
+#### Multiple module build configuration
 
 ```javascript
 ({
@@ -212,7 +210,7 @@ For multiple module builds, your configuration might look like this:
     // Plugin code is not needed anymore when inlining locales
     stubModules: ["path/to/require/i18next/plugin"],
     
-    // Add the i18next lib as dependency to the build modules which use the plugin
+    // Add the i18next lib as dependency to the modules which use the plugin
     // (it is not included by the plugin when building)
     shim: {
         "first": ["i18next"],
