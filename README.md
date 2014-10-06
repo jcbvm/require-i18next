@@ -2,15 +2,27 @@
 
 A [RequireJS](http://requirejs.org) plugin for requiring and optimizing translations using [i18next](http://i18next.com).
 
-## Download
-
-[Latest release](https://github.com/jcbvm/require-i18next/releases/latest)
-
-## Support
-
 The plugin supports both [RequireJS](http://requirejs.org) and [Almond](https://github.com/jrburke/almond).
 
+- [Usage](#usage)
+  - [Loading locales](#loading-locales)
+  - [Loading additional namespaces](#loading-additional-namespaces)
+  - [Special notes](#special-notes)
+- [Setup and Configuration](#setup-and-configuration)
+  - [Setup plugin](#setup-plugin)
+  - [Basic configuration](#basic-configuration)
+  - [Advanced configuration](#advanced-configuration)
+- [Optimization](#optimization)
+  - [Inlining locales](#inlining-locales)
+    - [Single module build configuration](#single-module-build-configuration)
+    - [Multiple module build configuration](#multiple-module-build-configuration)
+- [Download](#download)
+- [Changelog](#changelog)
+- [License](#license)
+
 ## Usage
+
+### Loading locales
 
 The require-i18next plugin makes is able to load locales as dependency in
 requirejs by simply using the prefix i18n! followed by a path to the 
@@ -90,7 +102,7 @@ This way, loading both locales will not override any existing translations withi
 
 ## Setup and Configuration
 
-### Plugin setup
+### Setup plugin
 
 Below follows a basic example on how to set up the plugin in requirejs.
 
@@ -228,6 +240,14 @@ The plugin supports inlining of locales when optimizing with requirejs. When inl
     ...
 })
 ```
+
+## Download
+
+[Latest release](https://github.com/jcbvm/require-i18next/releases/latest)
+
+## Changelog
+
+[Changelog](https://github.com/jcbvm/require-i18next/blob/master/CHANGELOG.md)
 
 ## License
 
