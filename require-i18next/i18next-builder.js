@@ -1,7 +1,7 @@
 /**
  * RequireJS i18next Plugin (builder)
  * 
- * @version 0.4.1
+ * @version 0.5.0
  * @copyright 2013-2014 Jacob van Mourik
  * @license MIT
  */
