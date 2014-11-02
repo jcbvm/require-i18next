@@ -1,6 +1,6 @@
 # require-i18next changelog
 
-### master (may become v0.5.0 or v0.4.2)
+### v0.5.0 (November 2, 2014)
 
 * [FEATURE] Added support for inlining locales multiple module builds, see [#13](https://github.com/jcbvm/require-i18next/issues/13).
 
