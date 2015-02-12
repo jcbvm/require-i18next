@@ -18,6 +18,6 @@
     "requirejs": "~2.1.11"
   },
   "devDependencies": {
-    "qunit": "~1.14.0"
+    "qunit": "~1.17.1"
   }
 }
