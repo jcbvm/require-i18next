@@ -1,6 +1,6 @@
 {
   "name": "require-i18next",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
   "authors": [
     "Jacob van Mourik"
@@ -14,10 +14,10 @@
     "require-i18next/i18next-builder"
   ],
   "dependencies": {
-    "i18next": "~1.7.2",
+    "i18next": ">=1.8.0",
     "requirejs": "~2.1.11"
   },
   "devDependencies": {
-    "qunit": "~1.17.1"
+    "qunit": "~1.19.0"
   }
 }

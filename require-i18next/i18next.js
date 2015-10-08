@@ -1,67 +1,21 @@
 /**
  * RequireJS i18next Plugin
  * 
- * @version 0.5.0
- * @copyright 2013-2014 Jacob van Mourik
+ * @version 0.6.0
+ * @copyright 2013-2015 Jacob van Mourik
  * @license MIT
  */
 define(["i18next"], function(i18next) {
     "use strict";
 
     var plugin,
-        supportedLngs,
         defaultNss,
-        resStore = {},
         f = i18next.functions,
         o = i18next.options;
 
     plugin = {
-        version: "0.5.0",
+        version: "0.6.0",
         pluginBuilder: "./i18next-builder",
-
-        /**
-         * Checks to see if there exists a resource with the given 
-         * resource path, language and namespace in the store. 
-         * 
-         * @param {String} resPath The resource path
-         * @param {String} lng The language
-         * @param {String} ns The namespace
-         * @returns {Boolean} If the resource exists in the store
-         */
-        resourceExists: function(resPath, lng, ns) {
-            return resStore[resPath] && resStore[resPath][lng] && resStore[resPath][lng][ns];
-        },
-
-        /**
-         * Adds a resource to the store (overrides existing one).
-         * 
-         * @param {String} resPath The resource path
-         * @param {String} lng The language
-         * @param {String} ns The namespace
-         * @param {Object} data The resource data
-         */
-        addResource: function(resPath, lng, ns, data) {
-            resStore[resPath] = resStore[resPath] || {};
-            resStore[resPath][lng] = resStore[resPath][lng] || {};
-            resStore[resPath][lng][ns] = data;
-        },
-
-        /**
-         * Gets all resources by the given language and namespace.
-         * 
-         * @param {String} lng The language
-         * @param {String} ns The namespace
-         * @returns {Object} The resource data
-         */
-        getResources: function(lng, ns) {
-            var data = {};
-            f.each(resStore, function(resPath) {
-                if (resStore[resPath][lng] && resStore[resPath][lng][ns]) {
-                    f.extend(data, resStore[resPath][lng][ns]);
-                }
-            });
-            return data;
-        },
 
         /**
          * Parses a resource name into its component parts. 
@@ -79,92 +33,83 @@ define(["i18next"], function(i18next) {
             };
         },
 
-        load: function(name, req, onload, config) {
-            var options = f.extend({}, config.i18next),
+        load: function(name, req, onload, conf) {
+            var config = f.extend({}, conf.i18next),
                 parsedName = plugin.parseName(name), 
                 resPath = parsedName.resPath, 
                 supportedLngs, namespaces;
 
-            // Initialize default namespaces
+            // Setup default namespaces if not set yet
             if (!defaultNss) {
-                if (!options.ns || typeof options.ns == "string") {
-                    defaultNss = [options.ns || o.ns];
+				if (!config.ns) {
+					defaultNss = o.ns.namespaces.slice();
+				} else if (typeof config.ns === "string") {
+                    defaultNss = [config.ns];
                 } else {
-                    defaultNss = options.ns.namespaces;
+                    defaultNss = config.ns.namespaces.slice();
                 }
             }
 
             // Setup namespaces
             namespaces = defaultNss.slice();
             f.each(parsedName.namespaces, function(idx, val) {
-                if (namespaces.indexOf(val) == -1) {
+                if (namespaces.indexOf(val) === -1) {
                     namespaces.push(val);
                 }
             });
 
             // Setup (scoped) supported languages
-            if (options.supportedLngs) {
+            if (config.supportedLngs) {
                 supportedLngs = 
-                    options.supportedLngs[resPath] || 
-                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
-                    options.supportedLngs;
+                    config.supportedLngs[resPath] || 
+                    config.supportedLngs[resPath.replace(/\/$/,'')] || 
+                    config.supportedLngs;
             }
 
             // Set namespaces
-            if (typeof o.ns == "string") {
-                options.ns = {
-                    defaultNs: namespaces[0],
-                    namespaces: namespaces
-                };
-            } else {
-                options.ns = f.extend({}, o.ns);
-                f.each(namespaces, function(idx, val) {
-                    if (options.ns.namespaces.indexOf(val) == -1) {
-                        options.ns.namespaces.push(val);
-                    }
-                });
-            }
+			config.ns = f.extend({}, o.ns);
+			f.each(namespaces, function(idx, val) {
+				if (config.ns.namespaces.indexOf(val) === -1) {
+					config.ns.namespaces.push(val);
+				}
+			});
 
             // Set a custom load function
-            options.customLoad = function(lng, ns, opts, done) {
-                var defaultNs = opts.ns.defaultNs,
+            config.customLoad = function(lng, ns, opts, done) {
+				var options = f.extend({}, opts),
+					defaultNs = options.ns.defaultNs,
                     fetch = true;
 
                 // Check if given namespace is requested by current module
-                if (namespaces.indexOf(ns) == -1) {
-                    fetch = false;
-                }
-                // Check for already loaded resPath
-                else if (plugin.resourceExists(resPath, lng, ns)) {
+                if (namespaces.indexOf(ns) === -1) {
                     fetch = false;
                 }
                 // Check for language/namespace support
-                else if (supportedLngs && (!supportedLngs[lng] || supportedLngs[lng].indexOf(ns) == -1)) {
+                else if (supportedLngs && (!supportedLngs[lng] || supportedLngs[lng].indexOf(ns) === -1)) {
                     f.log("no locale support found for " + lng + " with namespace " + ns);
                     fetch = false;
                 }
 
                 if (!fetch) {
-                    done(null, plugin.getResources(lng, ns));
+                    done(null, i18next.getResourceBundle(lng, ns));
                     return;
                 }
 
                 // Define resource url
-                opts = f.extend({}, opts);
-                opts.resGetPath = req.toUrl(resPath + opts.resGetPath);
+                options.resGetPath = req.toUrl(resPath + options.resGetPath);
 
                 // Make the request
-                i18next.sync._fetchOne(lng, ns, opts, function(err, data) {
-                    plugin.addResource(resPath, lng, ns, data);
-                    done(err, plugin.getResources(lng, ns));
+                i18next.sync._fetchOne(lng, ns, options, function(err, data) {
+                    i18next.addResourceBundle(lng, ns, data); // deep extend?
+                    done(err, i18next.getResourceBundle(lng, ns));
                 });
             };
 
             // Delete supported languages, they are only needed by this plugin
-            delete options.supportedLngs;
+            delete config.supportedLngs;
 
             // Initialize i18next and return the i18next instance
-            i18next.init(options, function() {
+            i18next.init(config, function() {
                 onload(i18next);
             });
         }

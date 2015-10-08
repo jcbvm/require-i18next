@@ -36,16 +36,18 @@ module.exports = function(grunt) {
         replace: {
             main: {
                 files: [{
-                    src: ['require-i18next/i18next.js', 'require-i18next/i18next-builder.js'],
-                    dest: './'
-                }],
+					expand: true,
+					flatten: true,
+					src: ['require-i18next/i18next.js', 'require-i18next/i18next-builder.js'],
+					dest: './require-i18next/'
+				}],
                 options: {
                     patterns: [{
-                        match: /@version.*\n/g,
-                        replacement: '@version <%= data.version %>\n',
+                        match: /@version.*(\r?\n)/g,
+                        replacement: '@version <%= data.version %>$1',
                     },  {
-                        match: /@copyright.*\n/g,
-                        replacement: '@copyright <%= data.copyright %>\n',
+                        match: /@copyright.*(\r?\n)/g,
+                        replacement: '@copyright <%= data.copyright %>$1',
                     }, {
                         match: /version: ".*"/g,
                         replacement: 'version: "<%= data.version %>"',
@@ -54,9 +56,11 @@ module.exports = function(grunt) {
             },
             json: {
                 files: [{
-                    src: ['bower.json', 'package.json'],
-                    dest: './'
-                }],
+					expand: true,
+					flatten: true,
+					src: ['bower.json', 'package.json'],
+					dest: './'
+				}],
                 options: {
                     patterns: [{
                         match: /"version": ".*"/g,

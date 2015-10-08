@@ -1,14 +1,15 @@
 /**
  * RequireJS i18next Plugin (builder)
  * 
- * @version 0.5.0
- * @copyright 2013-2014 Jacob van Mourik
+ * @version 0.6.0
+ * @copyright 2013-2015 Jacob van Mourik
  * @license MIT
  */
 (function() {
     "use strict";
 
-    var data, buildConfig;
+    var data, 
+		buildConfig;
 
     /**
      * Deeply extends an object with another object
@@ -21,7 +22,7 @@
         obj = obj || {};
         for (var prop in src) {
             if (!src.hasOwnProperty(prop)) continue;
-            if (Object.prototype.toString.call(src[prop]) === '[object Object]') {
+            if (Object.prototype.toString.call(src[prop]) === "[object Object]") {
                 obj[prop] = extend(obj[prop], src[prop]);
             } else {
                 obj[prop] = src[prop];
@@ -102,7 +103,7 @@
                 return onload();
             }
 
-            // Setup build config and data
+            // Setup build config and data if not set yet
             if (!buildConfig) {
                 buildConfig = config;
                 data = extend({}, config.i18next);
@@ -118,16 +119,16 @@
             }, config.i18next);
 
             // Setup namespaces
-            namespaces = typeof options.ns == "string" ? [options.ns] : options.ns.namespaces;
+            namespaces = typeof options.ns === "string" ? [options.ns] : options.ns.namespaces;
             parsedName.namespaces.forEach(function(ns) {
-                if (namespaces.indexOf(ns) == -1) {
+                if (namespaces.indexOf(ns) === -1) {
                     namespaces.push(ns);
                 }
             });
 
             // Setup (scoped) supported languages
             supportedLngs = options.supportedLngs[resPath] || 
-                    options.supportedLngs[resPath.replace(/\/$/,'')] || 
+                    options.supportedLngs[resPath.replace(/\/$/,"")] || 
                     options.supportedLngs;
 
             // Load all needed resources
@@ -138,8 +139,8 @@
                     if (namespaces.indexOf(ns) !== -1) {
                         data.resStore[lng][ns] = data.resStore[lng][ns] || {};
                         url = req.toUrl(resPath + options.resGetPath
-                                .replace(options.interpolationPrefix + "ns" + options.interpolationSuffix, ns)
-                                .replace(options.interpolationPrefix + "lng" + options.interpolationSuffix, lng));
+                                .replace([options.interpolationPrefix, "ns", options.interpolationSuffix].join(""), ns)
+                                .replace([options.interpolationPrefix, "lng", options.interpolationSuffix].join(""), lng));
                         content = JSON.parse(loadFile(url));
                         extend(data.resStore[lng][ns], content);
                     }

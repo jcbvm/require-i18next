@@ -1,4 +1,4 @@
-define(['i18n'], function(plugin) {
+define(['qunit', 'i18n'], function(QUnit, plugin) {
     var translation = {
         test: 'hallo'
     };
@@ -15,25 +15,25 @@ define(['i18n'], function(plugin) {
         }
     });
     require(['i18n!:namespace1,namespace2'], function(i18n) {
-        test('resources', function() {
-            deepEqual(plugin.getResources('nl', 'translation'), translation);
-            deepEqual(plugin.getResources('nl', 'namespace1'), namespace1);
-            deepEqual(plugin.getResources('nl', 'namespace2'), {});
-            deepEqual(plugin.getResources('en', 'translation'), {});
-            deepEqual(plugin.getResources('en', 'namespace1'), {});
-            deepEqual(plugin.getResources('en', 'namespace2'), {});
+        QUnit.test('resources', function(assert) {
+            assert.deepEqual(i18n.getResourceBundle('nl', 'translation'), translation);
+            assert.deepEqual(i18n.getResourceBundle('nl', 'namespace1'), namespace1);
+            assert.deepEqual(i18n.getResourceBundle('nl', 'namespace2'), {});
+            assert.deepEqual(i18n.getResourceBundle('en', 'translation'), {});
+            assert.deepEqual(i18n.getResourceBundle('en', 'namespace1'), {});
+            assert.deepEqual(i18n.getResourceBundle('en', 'namespace2'), {});
         });
-        test('namespaces', function() {
-            deepEqual(i18n.options.ns, {
+        QUnit.test('namespaces', function(assert) {
+            assert.deepEqual(i18n.options.ns, {
                 defaultNs: 'translation',
                 namespaces: ['translation', 'namespace1', 'namespace2']
             });
         });
-        test('translate', function() {
-            strictEqual(i18n.t('test'), translation.test);
-            strictEqual(i18n.t('namespace1:test'), namespace1.test);
-            strictEqual(i18n.t('namespace2:test'), 'namespace2:test');
+        QUnit.test('translate', function(assert) {
+            assert.strictEqual(i18n.t('test'), translation.test);
+            assert.strictEqual(i18n.t('namespace1:test'), namespace1.test);
+            assert.strictEqual(i18n.t('namespace2:test'), 'namespace2:test');
         });
-        start();
+        QUnit.start();
     });
 });

@@ -1,20 +1,20 @@
-define(['i18n'], function(plugin) {
+define(['qunit', 'i18n'], function(QUnit, plugin) {
     var translation = {
         test: 'hello'
     };
     require(['i18n!'], function(i18n) {
-        test('resources', function() {
-            deepEqual(plugin.getResources('en', 'translation'), translation);
+        QUnit.test('resources', function(assert) {
+            assert.deepEqual(i18n.getResourceBundle('en', 'translation'), translation);
         });
-        test('namespaces', function() {
-            deepEqual(i18n.options.ns, {
+        QUnit.test('namespaces', function(assert) {
+            assert.deepEqual(i18n.options.ns, {
                 defaultNs: 'translation',
                 namespaces: ['translation']
             });
         });
-        test('translate', function() {
-            strictEqual(i18n.t('test'), translation.test);
+        QUnit.test('translate', function(assert) {
+            assert.strictEqual(i18n.t('test'), translation.test);
         });
-        start();
+        QUnit.start();
     });
 });

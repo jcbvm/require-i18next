@@ -1,4 +1,4 @@
-define(['i18n'], function(plugin) {
+define(['qunit', 'i18n'], function(QUnit, plugin) {
     var enTranslation = {
         test: 'hello',
         module: {
@@ -28,31 +28,31 @@ define(['i18n'], function(plugin) {
     });
     require(['i18n!:namespace1,namespace2'], function() {
         require(['i18n!module:namespace1,namespace2'], function(i18n) {
-            test('resources', function() {
-                deepEqual(plugin.getResources('nl', 'translation'), nlTranslation);
-                deepEqual(plugin.getResources('nl', 'namespace1'), nlNamespace1);
-                deepEqual(plugin.getResources('nl', 'namespace2'), {});
-                deepEqual(plugin.getResources('en', 'translation'), enTranslation);
-                deepEqual(plugin.getResources('en', 'namespace1'), {});
-                deepEqual(plugin.getResources('en', 'namespace2'), {});
+            QUnit.test('resources', function(assert) {
+                assert.deepEqual(i18n.getResourceBundle('nl', 'translation'), nlTranslation);
+                assert.deepEqual(i18n.getResourceBundle('nl', 'namespace1'), nlNamespace1);
+                assert.deepEqual(i18n.getResourceBundle('nl', 'namespace2'), {});
+                assert.deepEqual(i18n.getResourceBundle('en', 'translation'), enTranslation);
+                assert.deepEqual(i18n.getResourceBundle('en', 'namespace1'), {});
+                assert.deepEqual(i18n.getResourceBundle('en', 'namespace2'), {});
             });
-            test('namespaces', function() {
-                deepEqual(i18n.options.ns, {
+            QUnit.test('namespaces', function(assert) {
+                assert.deepEqual(i18n.options.ns, {
                     defaultNs: 'translation',
                     namespaces: ['translation', 'namespace1', 'namespace2']
                 });
             });
-            test('translate', function() {
-                strictEqual(i18n.t('test', {lng: 'nl'}), nlTranslation.test);
-                strictEqual(i18n.t('module.test', {lng: 'nl'}), enTranslation.module.test);
-                strictEqual(i18n.t('namespace1:test', {lng: 'nl'}), nlNamespace1.test);
-                strictEqual(i18n.t('namespace2:test', {lng: 'nl'}), 'namespace2:test');
-                strictEqual(i18n.t('test', {lng: 'en'}), enTranslation.test);
-                strictEqual(i18n.t('module.test', {lng: 'en'}), enTranslation.module.test);
-                strictEqual(i18n.t('namespace1:test', {lng: 'en'}), 'namespace1:test');
-                strictEqual(i18n.t('namespace2:test', {lng: 'en'}), 'namespace2:test');
+            QUnit.test('translate', function(assert) {
+                assert.strictEqual(i18n.t('test', {lng: 'nl'}), nlTranslation.test);
+                assert.strictEqual(i18n.t('module.test', {lng: 'nl'}), enTranslation.module.test);
+                assert.strictEqual(i18n.t('namespace1:test', {lng: 'nl'}), nlNamespace1.test);
+                assert.strictEqual(i18n.t('namespace2:test', {lng: 'nl'}), 'namespace2:test');
+                assert.strictEqual(i18n.t('test', {lng: 'en'}), enTranslation.test);
+                assert.strictEqual(i18n.t('module.test', {lng: 'en'}), enTranslation.module.test);
+                assert.strictEqual(i18n.t('namespace1:test', {lng: 'en'}), 'namespace1:test');
+                assert.strictEqual(i18n.t('namespace2:test', {lng: 'en'}), 'namespace2:test');
             });
-            start();
+            QUnit.start();
         });
     });
 });
