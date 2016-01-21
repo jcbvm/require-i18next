@@ -2,6 +2,8 @@
 
 A [RequireJS](http://requirejs.org) plugin for requiring and optimizing translations using [i18next](http://i18next.com).
 
+<strong>NOTE: This plugin does not (yet) support i18next version 2.x</strong>
+
 The plugin supports both [RequireJS](http://requirejs.org) and [Almond](https://github.com/jrburke/almond).
 
 - [Usage](#usage)
