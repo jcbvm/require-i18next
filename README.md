@@ -1,6 +1,6 @@
-# require-i18next [![Build Status](https://travis-ci.org/jcbvm/require-i18next.svg?branch=master)](https://travis-ci.org/jcbvm/require-i18next) [![devDependency Status](https://david-dm.org/jcbvm/require-i18next/dev-status.svg)](https://david-dm.org/jcbvm/require-i18next#info=devDependencies)
+THIS PROJECT IS NO LONGER MAINTAINED
 
-<strong>THIS PROJECT IS NO LONGER MAINTAINED</strong>
+# require-i18next
 
 A [RequireJS](http://requirejs.org) plugin for requiring and optimizing translations using [i18next](http://i18next.com).
 
